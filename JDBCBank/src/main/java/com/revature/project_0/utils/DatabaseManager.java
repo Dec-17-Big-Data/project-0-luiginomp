@@ -3,6 +3,7 @@ package com.revature.project_0.utils;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +33,7 @@ public class DatabaseManager {
 			Log.info("Creating statement");
 			Statement statement = connection.createStatement();
 			Log.info("Adding command strings to batch");
-			String command = "create table bank_user (user_id number (10) primary key, username varchar2 (255), password varchar2 (255), account_id number (10))";
+			String command = "create table bank_user (user_id number (10) primary key, username varchar2 (255), password varchar2 (255), user_type varchar2 (255), account_id number (10))";
 			statement.addBatch(command);
 			command = "create table bank_account (account_id number (10) primary key, balance binary_float default '0', user_id number (10))";
 			statement.addBatch(command);

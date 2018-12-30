@@ -10,16 +10,31 @@ public class User implements Serializable {
 	private Integer userId;
 	private String userName;
 	private String password;
+	private String userType;
 	
-	//TODO turn into Bean
-	public User () {
-		
-	}
-	
-	public User (Integer userId, String userName, String password) {
+	public User(Integer userId, String userName, String password, String userType) {
+		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.password = password;
+		this.userType = userType;
+	}
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	//TODO turn into Bean
+	public User () {
+		
 	}
 
 	public Integer getUserId() {

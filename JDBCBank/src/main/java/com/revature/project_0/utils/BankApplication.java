@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.revature.project_0.dao.UserDAO;
 import com.revature.project_0.dao.UserOracle;
-import com.revature.project_0.models.User;
 import com.revature.project_0.services.*;
 
 public class BankApplication {
@@ -21,16 +20,17 @@ public class BankApplication {
 		Log.traceEntry("Application starting");
 		try {
 			DatabaseManager.setupSchema();
-			UserService.createUser(username, password);
-			UserService.createUser("LuiginoMP", "C0d3L1k34B0$$");
-			UserService.createUser("JohnDoe", "Wh04m!?");
-			UserService.createUser("CarlSagan", "Space4Us!");
+			userDAO.createUser(username, password, "super");
+			UserService.register("JohnDoe", "Wh04m!?");
+			UserService.createSuperUser("CarlSagan", "Space4Us!");
 			userDAO.getAllUsers();
 			UserService.logIn(username, password);
+			UserService.createSuperUser("LuiginoMP", "C0d3L1k34B0$$");
+			UserService.logOut();
 			DatabaseManager.tearDownSchema();
 		}catch(NoSuchElementException e) {
 			Log.error("Unable to find user");
 		}
-		Log.traceExit("Application completed");
+		Log.traceExit("Application ended");
 	}
 }

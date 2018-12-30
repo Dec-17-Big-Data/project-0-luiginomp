@@ -1,7 +1,5 @@
 package com.revature.project_0.services;
 
-import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,26 +27,41 @@ public class UserService {
 	}
 	
 	public static Boolean logIn(String username, String password) {
-		Log.traceEntry("Logging in with " + username + ", " + password);
-		User user = userDAO.getUserByUsername(username).get();
-		if(user == null) {
-			Log.traceExit("Username not found");
+		Log.traceEntry("Sending login attempt request to DAO with " + username + ", " + password);
+		currentUser = userDAO.logIn(username, password).get();
+		if(currentUser == null) {
+			Log.traceExit("Incorrect username or password entered. Login attempt failed");
 			return false;
 		}else {
-			if(password.equals(user.getPassword())) {
-				currentUser = user;
-				Log.traceExit("Log in successful");
-				return true;
-			}else {
-				Log.traceExit("Password doesn't match");
-				return false;
-			}
+			Log.traceExit("Log in successful");
+			return true;
 		}
 	}
 	
+	public static Boolean logOut() {
+		Log.traceEntry("Logging out");
+		currentUser = null;
+		Log.traceExit("Successfully logged off");
+		return false;
+	}
 	
-	public static Boolean createUser(String username, String password) {
-		return userDAO.createUser(username, password);
+	public static Boolean register(String username, String password) {
+		return userDAO.createUser(username, password, "user");
+	}
+	
+	public static Boolean createSuperUser(String username, String password) {
+		Log.traceEntry("Create super user requested using username " + username + " and password " + password);
+		if(currentUser == null) {
+			Log.traceExit("Please log in to admin account to perform action");
+			return false;
+		}
+		if(currentUser.getUserType().equals("super")) {
+			Log.traceExit("Admin credentials approved");
+			return userDAO.createUser(username, password, "super");
+		}else {
+			Log.traceExit("Please log in to admin account to perform action");
+			return false;
+		}
 	}
 }
 
