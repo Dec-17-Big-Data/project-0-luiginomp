@@ -49,6 +49,7 @@ public class DatabaseManager {
 		}catch(SQLException e) {
 			
 		}
+		Log.traceExit("Schema setup unsuccessful");
 		return false;
 	}
 	

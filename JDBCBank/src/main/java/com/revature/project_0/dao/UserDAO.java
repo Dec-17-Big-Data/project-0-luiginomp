@@ -7,7 +7,7 @@ import com.revature.project_0.models.User;
 
 public interface UserDAO {
 	 Optional <List<User>> getAllUsers();
-	 Optional <User> getUserByUsername(String name);
-	 Optional <User> getUserById(Integer id);
+	 Optional <User> getUserByUsername(String username);
 	 Boolean createUser(String username, String password);
+	 Boolean logOut();
 }

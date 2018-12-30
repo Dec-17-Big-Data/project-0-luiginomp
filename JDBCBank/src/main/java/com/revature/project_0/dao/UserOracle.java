@@ -40,10 +40,10 @@ public class UserOracle implements UserDAO{
 			Log.info("Converting command");
 			PreparedStatement preparedStatement = connection.prepareStatement(command);
 			Log.info("Creating result set");
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while(resultSet.next()) {
-				Log.info("Found user: ID " + resultSet.getInt("user_id") + ", Username " + resultSet.getString("username") + ", Password " + resultSet.getString("password") + ", Account ID " + resultSet.getInt("account_id"));
-				userList.add(new User(resultSet.getInt("user_id"), resultSet.getString("username"), resultSet.getString("password")));	
+			ResultSet result = preparedStatement.executeQuery();
+			while(result.next()) {
+				Log.info("Found user: ID " + result.getInt("user_id") + ", Username " + result.getString("username") + ", Password " + result.getString("password") + ", Account ID " + result.getInt("account_id"));
+				userList.add(new User(result.getInt("user_id"), result.getString("username"), result.getString("password")));	
 			}
 			if(userList.isEmpty()) {
 				Log.traceExit("No users found in bank_user table.");
@@ -57,14 +57,7 @@ public class UserOracle implements UserDAO{
 		Log.traceExit(Optional.of(userList));
 		return Optional.of(userList);
 	}
-
-	public Optional<User> getUserById(Integer id) {
-		Log.traceEntry("Getting user by ID {}", id);
-		User user = null;
-		Log.traceExit("No user found");
-		return Optional.of(user);
-	}
-
+	
 	public Optional <User> getUserByUsername(String name){
 		Log.traceEntry("Search for username " + name);
 		Connection connection = ConnectionUtil.getConnection();
@@ -79,11 +72,11 @@ public class UserOracle implements UserDAO{
 			Log.info("Converting command");
 			PreparedStatement preparedStatement = connection.prepareStatement(command);
 			Log.info("Creating result set");
-			ResultSet resultSet = preparedStatement.executeQuery();
+			ResultSet result = preparedStatement.executeQuery();
 			Log.info("Iterating through result set");
-			while(resultSet.next()) {
-				user = new User(resultSet.getInt("user_id"), resultSet.getString("username"), resultSet.getString("password"));
-				Log.traceExit("Found user: ID " + resultSet.getInt("user_id") + ", Username " + resultSet.getString("username") + ", Password " + resultSet.getString("password") + ", Account ID " + resultSet.getInt("account_id"));
+			while(result.next()) {
+				user = new User(result.getInt("user_id"), result.getString("username"), result.getString("password"));
+				Log.traceExit("Found user: ID " + result.getInt("user_id") + ", Username " + result.getString("username") + ", Password " + result.getString("password") + ", Account ID " + result.getInt("account_id"));
 				return Optional.of(user);
 			}
 			
@@ -105,11 +98,20 @@ public class UserOracle implements UserDAO{
 			Log.traceExit("No connection - could not create new user");
 			return false;
 		}
+		Integer userCount = 0;
+		List <User> userList = new ArrayList <User>();
 		try {
 			Log.info("Creating statement");
 			Statement statement = connection.createStatement();
+			Log.info("Requesting number of users");
+			String command = "select * from bank_user";
+			ResultSet result = statement.executeQuery(command);
+			while(result.next()) {
+				userList.add(new User());
+			}
+			userCount = userList.size();
 			Log.info("Adding command strings to batch");
-			String command = "insert into bank_user values (101, '" + username + "', '" + password + "', null)";
+			command = "insert into bank_user values (" + userCount + ", '" + username + "', '" + password + "', null)";
 			statement.addBatch(command);
 			command = "commit";
 			statement.addBatch(command);
@@ -122,5 +124,32 @@ public class UserOracle implements UserDAO{
 		}
 		Log.traceExit("Unable to create new user");
 		return false;
+	}
+
+
+	public Boolean logOut() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public String getPassword(String username) {
+		Log.traceEntry("Get the password for " + username);
+		Connection connection = ConnectionUtil.getConnection();
+		if(connection == null) {
+			Log.traceExit("No connection - could not create new user");
+			return null;
+		}
+		String password = "";
+		try {
+			String command = "select password from bank_user where username = '" + username + "'";
+			PreparedStatement statement = connection.prepareStatement(command);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				password = result.getString("password");
+			}
+		}catch(SQLException e) {
+			
+		}
+		return password;
 	}
 }
