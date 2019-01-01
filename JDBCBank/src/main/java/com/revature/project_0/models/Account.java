@@ -72,10 +72,6 @@ public class Account implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Account [accountId=" + accountId + ", balance=" + balance + ", getAccountId()=" + getAccountId()
-				+ ", getBalance()=" + getBalance() + ", hashCode()=" + hashCode() + ", getClass()=" + getClass()
-				+ ", toString()=" + super.toString() + "]";
+		return "Account [accountId=" + accountId + ", balance=" + balance + "]";
 	}
-	
-	
 }

@@ -10,29 +10,18 @@ public class User implements Serializable {
 	private Integer userId;
 	private String userName;
 	private String password;
-	private String userType;
 	
-	public User(Integer userId, String userName, String password, String userType) {
+	public User(Integer userId, String userName, String password) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.password = password;
-		this.userType = userType;
-	}
-
-	public String getUserType() {
-		return userType;
-	}
-
-	public void setUserType(String userType) {
-		this.userType = userType;
 	}
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
-	//TODO turn into Bean
 	public User () {
 		
 	}
@@ -100,10 +89,7 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", userName=" + userName + ", password=" + password + ", getUserId()="
-				+ getUserId() + ", getUserName()=" + getUserName() + ", getPassword()=" + getPassword()
-				+ ", hashCode()=" + hashCode() + ", getClass()=" + getClass() + ", toString()=" + super.toString()
-				+ "]";
+		return "User [userId=" + userId + ", userName=" + userName + ", password=" + password + "]";
 	}
 	
 	

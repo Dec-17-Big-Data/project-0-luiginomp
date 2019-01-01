@@ -13,20 +13,12 @@ public class BankApplication {
 	
 	private static Logger Log = LogManager.getLogger(BankApplication.class);
 	final static UserDAO userDAO = UserOracle.getDAO();
-	private static String username = "Overseer";
-	private static String password = "Vault#101";
 	
 	public static void main (String[] args) {
 		Log.traceEntry("Application starting");
 		try {
 			DatabaseManager.setupSchema();
-			userDAO.createUser(username, password, "super");
-			UserService.register("JohnDoe", "Wh04m!?");
-			UserService.createSuperUser("CarlSagan", "Space4Us!");
-			userDAO.getAllUsers();
-			UserService.logIn(username, password);
-			UserService.createSuperUser("LuiginoMP", "C0d3L1k34B0$$");
-			UserService.logOut();
+
 			DatabaseManager.tearDownSchema();
 		}catch(NoSuchElementException e) {
 			Log.error("Unable to find user");

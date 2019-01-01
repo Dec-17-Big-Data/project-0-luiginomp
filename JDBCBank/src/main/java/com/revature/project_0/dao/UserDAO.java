@@ -1,26 +1,17 @@
 package com.revature.project_0.dao;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.revature.project_0.models.Account;
 import com.revature.project_0.models.User;
 
+
 public interface UserDAO {
-	//Standard services
-	Boolean createUser(String username, String password, String type);
-	Optional <User> logIn(String username, String password);
-	Boolean createAccount();
-	Boolean deleteAccount();
-	Optional <List<Account>> getAllAccounts();
-	Optional <Account> getAccountByAccountId(Integer id);
-	Boolean addToAccount();
-	Boolean withdrawFromAccount();
-	
-	 //Super services
-	Optional <User> getUserByUsername(String username);
-	Boolean deleteUser(String username);
-	Optional <List<User>> getAllUsers();
-	Boolean deleteAllUsers(String username);
-	
+	//An unregistered user can register by creating a username and password
+	public Boolean createUser (String username, String password);
+	//A registered user can login with their username and password  
+	public Optional <User> getUser (String username);
+	public Boolean comparePassword (String password, User user);
+	//A user can logout. 
+	public Boolean logOut();
 }
