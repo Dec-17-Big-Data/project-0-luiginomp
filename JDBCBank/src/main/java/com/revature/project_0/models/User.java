@@ -10,14 +10,12 @@ public class User implements Serializable {
 	private Integer userId;
 	private String userName;
 	private String password;
-	private String type;
 	
-	public User(Integer userId, String userName, String password, String type) {
+	public User(Integer userId, String userName, String password) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.password = password;
-		this.type = type;
 	}
 
 	public static long getSerialversionuid() {
@@ -50,14 +48,6 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public void SetType(String type) {
-		this.type = type;
 	}
 
 	@Override

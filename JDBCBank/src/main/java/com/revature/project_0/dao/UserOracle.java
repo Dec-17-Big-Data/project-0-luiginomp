@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,12 +29,8 @@ public class UserOracle implements UserDAO{
 		return instance;
 	}
 
-	public Boolean createUser(String username, String password, String type) {
-		Log.traceEntry("Create user with name " + username + ", password " + password + ", and type " + type);
-		if(type != "Admin" && type != "Normal") {
-			Log.traceExit("User type not specified as 'Normal' or 'Admin'. Failed to create user");
-			return false;
-		}
+	public Boolean createUser(String username, String password) {
+		Log.traceEntry("Create user with name " + username + ", password " + password);
 		if((Optional) getUser(username) != Optional.empty()) {
 			Log.traceExit("Username already exists. Failed to create user");
 			return false;
@@ -46,14 +41,12 @@ public class UserOracle implements UserDAO{
 			return false;
 		}
 		Log.trace("Username is valid");
-		String sql = "{call insert_user (?, ?, ?)}";
+		String sql = "{call insert_user (?, ?)}";
 		CallableStatement stmt = null;
 		try {
-			Log.trace("Preparing call to stored procedure");
 			stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
 			stmt.setString(2, password);
-			stmt.setString(3, type);
 			stmt.execute();
 			Log.trace("Call successful");
 			return true;
@@ -96,7 +89,7 @@ public class UserOracle implements UserDAO{
 		stmt.setString(1, username);
 		rs = stmt.executeQuery();
 		if(rs.next() == true) {
-			user = new User(rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"), rs.getString("user_type"));
+			user = new User(rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"));
 			Log.info("Username found on file");
 			return Optional.of(user);
 		}
@@ -127,15 +120,5 @@ public class UserOracle implements UserDAO{
 		}
 		Log.traceExit("Username not found");
 		return Optional.empty();
-	}
-	
-	public Boolean comparePassword (String password, User user) {
-		//TODO Auto-generated method stub
-		return null;
-	}
-
-	public Boolean logOut() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
