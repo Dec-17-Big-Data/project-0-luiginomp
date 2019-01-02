@@ -2,7 +2,10 @@ package com.revature.project_0.dao;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,33 +18,94 @@ public class UserOracle implements UserDAO{
 	
 	private static Logger Log = LogManager.getLogger(UserOracle.class);
 	
+	private static UserOracle instance;
+	
 	protected UserOracle() {
+	}
+	
+	public static UserDAO getDAO() {
+		if(instance == null) {
+			instance = new UserOracle();
+		}
+		return instance;
 	}
 
 	public Boolean createUser(String username, String password, String type) {
-		Log.traceEntry("Create user with name " + username + " and password " + password);
-		Connection conn = ConnectionUtil.getConnection();
-		if(conn == null) {
-			Log.traceExit("No connection to database found. Failed to create user");
+		Log.traceEntry("Create user with name " + username + ", password " + password + ", and type " + type);
+		if(type != "Admin" && type != "Normal") {
+			Log.traceExit("User type not specified as 'Normal' or 'Admin'. Failed to create user");
 			return false;
 		}
 		if((Optional) getUser(username) != Optional.empty()) {
 			Log.traceExit("Username already exists. Failed to create user");
 			return false;
 		}
+		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			Log.traceExit("No connection to database found. Failed to create user");
+			return false;
+		}
 		Log.trace("Username is valid");
-		String sql = "{call insert_user (?, ?)}";
+		String sql = "{call insert_user (?, ?, ?)}";
 		CallableStatement stmt = null;
 		try {
 			Log.trace("Preparing call to stored procedure");
 			stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
 			stmt.setString(2, password);
+			stmt.setString(3, type);
 			stmt.execute();
 			Log.trace("Call successful");
 			return true;
 		}catch (SQLException e) {
 			Log.error("SQL Exception occurred while attempting to prepare statement", e);
+		}catch (Exception e) {
+			Log.error("Exception Occurred: ", e);
+		}finally {
+			try {
+				if(stmt != null) {
+					conn.close();
+				}
+			}catch (SQLException e) {
+				Log.error("SQL Exception occurred while attempting to close connection", e);
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+					Log.info("Closed connection to database");
+				}
+			}catch (SQLException e) {
+				Log.error("SQL Exception occurred while attempting to close connection", e);
+			}
+		}
+		return false;
+	}
+
+	public Optional<User> getUser(String username) {
+		Log.traceEntry("Retrieving user named " + username);
+		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			Log.traceExit("No connection to database found. Failed to search for user");
+		}
+		User user = null;
+		String sql = "select * from bank_user where user_name = ?";
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+		stmt = conn.prepareStatement(sql);
+		stmt.setString(1, username);
+		rs = stmt.executeQuery();
+		if(rs.next() == true) {
+			user = new User(rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"), rs.getString("user_type"));
+			Log.info("Username found on file");
+			return Optional.of(user);
+		}
+		if(user == null) {
+			Log.info("Username not found");
+			return Optional.empty();
+		}
+		}catch (SQLException e) {
+			Log.error("SQL Exception occurred while attempting to get result set", e);
 		}catch (Exception e) {
 			Log.error("Exception Occurred: ", e);
 		}finally {
@@ -61,13 +125,7 @@ public class UserOracle implements UserDAO{
 				Log.error("SQL Exception occurred while attempting to close connection", e);
 			}
 		}
-		return false;
-	}
-
-	public Optional<User> getUser(String username) {
-		Log.traceEntry("Retrieving user named " + username);
-		Log.traceExit("Functionality not yet implemented. Returning empty");
-		// TODO Auto-generated method stub
+		Log.traceExit("Username not found");
 		return Optional.empty();
 	}
 	

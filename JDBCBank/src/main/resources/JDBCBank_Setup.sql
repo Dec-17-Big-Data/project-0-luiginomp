@@ -1,5 +1,5 @@
 
-create table bank_user (user_id number (10) primary key, user_name varchar2 (255)unique not null, user_password varchar2 (255)unique not null, user_type varchar2 (255) unique not null, account_id number (10));
+create table bank_user (user_id number (10) primary key, user_name varchar2 (255)unique not null, user_password varchar2 (255) not null, user_type varchar2 (255) not null, account_id number (10));
 
 create table bank_account (account_id number (10) primary key, account_balance binary_float default '0', user_id number (10) unique not null);
 
@@ -34,3 +34,8 @@ end;
 /
 
 commit;
+
+--DELETE THESE
+
+call insert_user ('Overseer', 'Vault#101', 'Admin');
+call insert_user('LeChiffre', 'baccarat', 'Normal');

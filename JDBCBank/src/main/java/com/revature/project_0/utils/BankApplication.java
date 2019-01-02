@@ -1,17 +1,20 @@
 package com.revature.project_0.utils;
 
-import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.revature.project_0.dao.*;
+import com.revature.project_0.models.User;
 
 public class BankApplication {
 	
 	private static Logger Log = LogManager.getLogger(BankApplication.class);
-	private Boolean loggedIn = false;
-	private Boolean adminuser = false;
+	private User currentUser = null;
+	private UserDAO userOracle = UserOracle.getDAO();
+	private AdminDAO adminOracle = AdminOracle.getDAO();
 	public static void main (String[] args) {
 		Log.traceEntry("Application starting");
+		
 		Log.traceExit("Application ended");
 	}
 }

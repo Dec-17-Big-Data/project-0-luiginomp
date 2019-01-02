@@ -12,11 +12,12 @@ public class User implements Serializable {
 	private String password;
 	private String type;
 	
-	public User(Integer userId, String userName, String password) {
+	public User(Integer userId, String userName, String password, String type) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.password = password;
+		this.type = type;
 	}
 
 	public static long getSerialversionuid() {
