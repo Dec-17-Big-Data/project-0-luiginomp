@@ -15,7 +15,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 
 	private static AdminOracle instance;
 	
-	public AdminOracle() {
+	private AdminOracle() {
 	}
 	
 	public static AdminDAO getDAO() {

@@ -32,7 +32,7 @@ public class ConnectionUtil {
             String username = props.getProperty("jdbc.username");
             String password = props.getProperty("jdbc.password");
             con = DriverManager.getConnection(endpoint, username, password);
-            Log.traceExit("Connection established to " + con.getSchema() + " schema");
+            Log.info("Connection established to " + con.getSchema() + " schema");
             return con;
 			
 		}catch (Exception e) {
