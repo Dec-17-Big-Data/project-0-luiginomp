@@ -13,6 +13,6 @@ public interface AccountDAO {
 	//A user can delete an account if it is empty.
 	public Boolean deleteAccount(Integer accountId);
 	//A user can add to or withdraw from an account. 
-	public Boolean depositToAccount(Double amount);
-	public Boolean withdrawFromAccount(Double amount);
+	public Boolean depositToAccount(Integer accountId, Double amount);
+	public Boolean withdrawFromAccount(Integer accountId, Double amount);
 }

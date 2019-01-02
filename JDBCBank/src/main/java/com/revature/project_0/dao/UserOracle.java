@@ -37,7 +37,7 @@ public class UserOracle implements UserDAO{
 		}
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
-			Log.traceExit("No connection to database found. Failed to create user");
+			Log.traceExit("Connection to database not found. Failed to perform request");
 			return false;
 		}
 		Log.trace("Username is valid");
@@ -48,7 +48,6 @@ public class UserOracle implements UserDAO{
 			stmt.setString(1, username);
 			stmt.setString(2, password);
 			stmt.execute();
-			Log.trace("Call successful");
 			return true;
 		}catch (SQLException e) {
 			Log.error("SQL Exception occurred while attempting to prepare statement", e);
@@ -78,7 +77,7 @@ public class UserOracle implements UserDAO{
 		Log.traceEntry("Retrieving user named " + username);
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
-			Log.traceExit("No connection to database found. Failed to search for user");
+			Log.traceExit("Connection to database not found. Failed to perform request");
 		}
 		User user = null;
 		String sql = "select * from bank_user where user_name = ?";

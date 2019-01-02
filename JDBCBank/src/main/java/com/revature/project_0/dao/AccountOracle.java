@@ -39,12 +39,12 @@ public class AccountOracle implements AccountDAO {
 		return null;
 	}
 
-	public Boolean depositToAccount(Double amount) {
+	public Boolean depositToAccount(Integer accountId, Double amount) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Boolean withdrawFromAccount(Double amount) {
+	public Boolean withdrawFromAccount(Integer accountId, Double amount) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -33,6 +33,13 @@ begin
 end;
 /
 
+create or replace procedure delete_user
+    (user_name in varchar2) as
+begin
+    delete from bank_user where bank_user.user_name = user_name;
+end;
+/
+
 commit;
 
 --DELETE BELOW LINE PRIOR TO FINALIZING

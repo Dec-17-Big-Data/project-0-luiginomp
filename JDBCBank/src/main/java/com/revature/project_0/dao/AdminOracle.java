@@ -1,6 +1,7 @@
 package com.revature.project_0.dao;
 
 import java.beans.Statement;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +37,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		Log.traceEntry("Get list of all users from database");
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
-			Log.traceExit("Connection to database not found. Failed to retrieve list of users");
+			Log.traceExit("Connection to database not found. Failed to perform request");
 			return Optional.empty();
 		}
 		List<User> userList = new ArrayList<User>();
@@ -45,11 +46,11 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			Log.trace("Preparing statement");
+			Log.info("Preparing statement");
 			stmt = conn.prepareStatement(sql);
-			Log.trace("Executing query");
+			Log.info("Executing query");
 			rs = stmt.executeQuery();
-			Log.trace("Running through results");
+			Log.info("Running through results");
 			while(rs.next()) {
 				user = new User (rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"));
 				Log.info("Found User: " + user.toString());
@@ -87,7 +88,46 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 	}
 
 	public Boolean deleteUser(String username) {
-		// TODO Auto-generated method stub
+		Log.traceEntry("Attempt to delete user with username " + username);
+		if(getUser(username).get() == null) {
+			Log.traceExit("Username not found. Failed to delete user");
+			return false;
+		}
+		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			Log.traceExit("Connection to database not found. Failed to perform request");
+			return false;
+		}
+		String sql = "{call delete_user (?)}";
+		CallableStatement stmt = null;
+		try {
+			Log.info("Preparing call");
+			stmt = conn.prepareCall(sql);
+			stmt.setString(1, username);
+			Log.info("Executing call");
+			stmt.execute();
+		}catch (SQLException e) {
+			Log.error("SQL Exception Ocurred:", e);
+		}catch (Exception e) {
+			Log.error("Exception Occurred: ", e);
+		}finally {
+			try {
+				if(stmt != null) {
+					conn.close();
+				}
+			}catch (SQLException e) {
+				Log.error("SQL Exception occurred while attempting to close connection", e);
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+					Log.info("Closed connection to database");
+				}
+			}catch (SQLException e) {
+				Log.error("SQL Exception occurred while attempting to close connection", e);
+			}
+		}
+		//Remove user from database
 		return null;
 	}
 
