@@ -1,6 +1,5 @@
 package com.revature.project_0.dao;
 
-import java.beans.Statement;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,11 +45,8 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			Log.info("Preparing statement");
 			stmt = conn.prepareStatement(sql);
-			Log.info("Executing query");
 			rs = stmt.executeQuery();
-			Log.info("Running through results");
 			while(rs.next()) {
 				user = new User (rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"));
 				Log.info("Found User: " + user.toString());
@@ -88,24 +84,16 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 	}
 
 	public Boolean deleteUser(String username) {
-		Log.traceEntry("Attempt to delete user with username " + username);
-		if(getUser(username).get() == null) {
-			Log.traceExit("Username not found. Failed to delete user");
-			return false;
-		}
+		Log.traceEntry("Attempt to call delete_user with username " + username);
 		Connection conn = ConnectionUtil.getConnection();
-		if(conn == null) {
-			Log.traceExit("Connection to database not found. Failed to perform request");
-			return false;
-		}
 		String sql = "{call delete_user (?)}";
 		CallableStatement stmt = null;
 		try {
-			Log.info("Preparing call");
 			stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
-			Log.info("Executing call");
 			stmt.execute();
+			Log.traceExit("Call to delete_user successfully sent");
+			return true;
 		}catch (SQLException e) {
 			Log.error("SQL Exception Ocurred:", e);
 		}catch (Exception e) {
@@ -117,6 +105,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 				}
 			}catch (SQLException e) {
 				Log.error("SQL Exception occurred while attempting to close connection", e);
+				return false;
 			}
 			try {
 				if(conn != null) {
@@ -127,12 +116,41 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 				Log.error("SQL Exception occurred while attempting to close connection", e);
 			}
 		}
-		//Remove user from database
-		return null;
+		return false;
 	}
 
 	public Boolean deleteAllUsers() {
-		// TODO Auto-generated method stub
+		Log.traceEntry("Attempting to call delete_all_users");
+		Connection conn = ConnectionUtil.getConnection();
+		String sql = "{call delete_all_users()}";
+		CallableStatement stmt = null;
+		try {
+			stmt = conn.prepareCall(sql);
+			stmt.execute();
+			Log.traceExit("Call to delete_all_users successfully sent");
+			return true;
+		}catch (SQLException e) {
+			Log.error("SQL Exception Ocurred:", e);
+		}catch (Exception e) {
+			Log.error("Exception Occurred: ", e);
+		}finally {
+			try {
+				if(stmt != null) {
+					conn.close();
+				}
+			}catch (SQLException e) {
+				Log.error("SQL Exception occurred while attempting to close connection", e);
+				return false;
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+					Log.info("Closed connection to database");
+				}
+			}catch (SQLException e) {
+				Log.error("SQL Exception occurred while attempting to close connection", e);
+			}
+		}
 		return null;
 	}
 

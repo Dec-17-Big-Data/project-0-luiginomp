@@ -7,7 +7,7 @@ import com.revature.project_0.models.User;
 
 public interface AccountDAO {
 	//A user can create an account. 
-	public Integer createAccount(User owner);
+	public Optional<Integer> createAccount();
 	//A user can view their own existing account and balances. 
 	public Optional <Account> getAccount(Integer accountId);
 	//A user can delete an account if it is empty.
