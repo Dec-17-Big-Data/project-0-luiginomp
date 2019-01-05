@@ -120,4 +120,5 @@ public class UserOracle implements UserDAO{
 		Log.traceExit("Username not found");
 		return Optional.empty();
 	}
+	
 }

@@ -48,8 +48,10 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 			stmt = conn.prepareStatement(sql);
 			rs = stmt.executeQuery();
 			while(rs.next()) {
-				user = new User (rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"));
-				Log.info("Found User: " + user.toString());
+				user = new User (
+						rs.getInt("user_id"),
+						rs.getString("user_name"),
+						rs.getString("user_password"));
 				userList.add(user);
 			}
 			if(userList.isEmpty()) {
@@ -64,21 +66,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}catch (Exception e) {
 			Log.error("Exception Occurred: ", e);
 		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.info("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+			ConnectionUtil.tryToClose(conn);
 		}
 		return Optional.empty();
 	}
@@ -99,22 +87,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}catch (Exception e) {
 			Log.error("Exception Occurred: ", e);
 		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-				return false;
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.info("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+			ConnectionUtil.tryToClose(conn);
 		}
 		return false;
 	}
@@ -134,34 +107,49 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}catch (Exception e) {
 			Log.error("Exception Occurred: ", e);
 		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-				return false;
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.info("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+			ConnectionUtil.tryToClose(conn);
 		}
-		return null;
+		Log.traceExit("Failed to call delete_all_users");
+		return false;
 	}
 
-	public Optional<List<Account>> getAllAccounts() {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean callUpdateUsername(String curName, String newName) {
+		Log.traceEntry("Calling update_username");
+		Connection conn = ConnectionUtil.getConnection();
+		String sql = "{call update_username (?, ?)}";
+		try {
+			CallableStatement stmt = conn.prepareCall(sql);
+			stmt.setString(1, curName);
+			stmt.setString(2, newName);
+			stmt.execute();
+			Log.traceExit("Completed call to update_username");
+			return true;
+		}catch (SQLException e) {
+			Log.error("SQL Exception occurred: ", e);
+		}finally {
+			ConnectionUtil.tryToClose(conn);
+		}
+		Log.traceExit("Failed to call update_username");
+		return false;
 	}
-
-	public Boolean deleteAllAccounts() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public Boolean callUpdatePassword(String username, String newPassword) {
+		Log.traceEntry("Calling update_password");
+		Connection conn = ConnectionUtil.getConnection();
+		String sql = "{call update_password (?, ?)}";
+		try {
+			CallableStatement stmt = conn.prepareCall(sql);
+			stmt.setString(1, username);
+			stmt.setString(2, newPassword);
+			stmt.execute();
+			Log.traceExit("Completed call to update_password");
+			return true;
+		}catch (SQLException e) {
+			Log.error("SQL Exception occurred: ", e);
+		}finally {
+			ConnectionUtil.tryToClose(conn);
+		}
+		Log.traceExit("Failed to call update_password");
+		return false;
 	}
-
 }

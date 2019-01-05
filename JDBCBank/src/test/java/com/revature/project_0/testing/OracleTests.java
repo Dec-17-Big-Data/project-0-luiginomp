@@ -32,7 +32,8 @@ public class OracleTests {
 	//==================================================================================================
 	//==================================================================================================
 	
-	//UserOracle
+//	//UserOracle
+//	//===========================================================================================
 //	@Test
 //	public void lookUpExistingUser() {
 //		//Assumes all provided parameters exist and match in the database
@@ -75,6 +76,7 @@ public class OracleTests {
 //	}
 //	
 //	//AdminOracle
+//	//===========================================================================================
 //	@Test
 //	public void deleteExistingUser() {
 //		assertEquals(true, adminOracle.deleteUser("LeChiffre"));
@@ -84,8 +86,19 @@ public class OracleTests {
 //	public void deleteAllExistingUsers() {
 //		assertEquals(true, adminOracle.deleteAllUsers());
 //	}
+//	
+//	@Test
+//	public void testCallUpdateUsername() {
+//		assertEquals(true, adminOracle.callUpdateUsername("LeChiffre", "MadsMikkelsen"));
+//	}
+//	
+//	@Test
+//	public void testCallUpdatePassword() {
+//		assertEquals(true, adminOracle.callUpdatePassword("LeChiffre", "JamesBond"));
+//	}
 //
 //	//AccountOracle
+//	//===========================================================================================
 //	@Test
 //	public void createFirstAccount() {
 //		//Assumes there are no existing accounts in the bank_account table
@@ -114,6 +127,7 @@ public class OracleTests {
 //	public void testCallWithdrawBalance() {
 //		assertEquals(true, accountOracle.callWithdrawBalance(1, 13.13));
 //	}
+
 	
 	//==================================================================================================
 	//==================================================================================================

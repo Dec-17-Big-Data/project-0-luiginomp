@@ -9,6 +9,6 @@ public interface AdminDAO extends UserDAO {
 	public Optional<List<User>> getAllUsers();
 	public Boolean deleteUser(String username);
 	public Boolean deleteAllUsers();
-	public Optional<List<Account>> getAllAccounts();
-	public Boolean deleteAllAccounts();
+	public Boolean callUpdateUsername(String curName, String newName);
+	public Boolean callUpdatePassword(String username, String newPassword);
 }

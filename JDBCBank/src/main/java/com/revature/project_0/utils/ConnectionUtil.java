@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnectionUtil {
@@ -47,6 +48,16 @@ public class ConnectionUtil {
 		return null;
 	}
 	
-	
+	public static Boolean tryToClose(Connection conn) {
+		if(conn != null) {
+			try {
+				conn.close();
+				return true;
+			}catch (SQLException e) {
+				Log.error("SQL Exception Occurred: ", e);
+			}
+		}
+		return false;
+	}
 }
 
