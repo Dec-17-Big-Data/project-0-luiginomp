@@ -99,11 +99,21 @@ public class OracleTests {
 //		assertEquals(Optional.of(expectedAccount), accountOracle.getAccount(1));
 //	}
 //	
-	@Test
-	public void deleteExistingAccount() {
-		//Assumes account exists with given account ID
-		assertEquals(true, accountOracle.deleteAccount(1));
-	}
+//	@Test
+//	public void deleteExistingAccount() {
+//		//Assumes account exists with given account ID
+//		assertEquals(true, accountOracle.deleteAccount(1));
+//	}
+//	
+//	@Test
+//	public void testCallDepositBalance() {
+//		assertEquals(true, accountOracle.callDepositBalance(1, 25.0));
+//	}
+//	
+//	@Test
+//	public void testCallWithdrawBalance() {
+//		assertEquals(true, accountOracle.callWithdrawBalance(1, 13.13));
+//	}
 	
 	//==================================================================================================
 	//==================================================================================================
