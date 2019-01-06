@@ -88,11 +88,10 @@ public class AccountService {
 	public Transaction makeDeposit(Integer accountId, Double amount) {
 		Log.traceEntry("Service depositing " + amount + " to account " + accountId);
 		if(amount <= 0) {
-			Log.traceExit("Service can only make deposits of greater than 0");
+			Log.traceExit("Service can only make deposits from amounts greater than 0");
 			return null;
 		}
-		Account account = retrieveAccount(accountId);
-		if(account == null) {
+		if(retrieveAccount(accountId) == null) {
 			Log.traceExit("Service failed to make deposit");
 			return null;
 		}
@@ -103,7 +102,7 @@ public class AccountService {
 			transactionId = null;
 		}
 		if(transactionId == null) {
-			Log.traceExit("Service failed to deposit balance");
+			Log.traceExit("Service failed to make deposit");
 			return null;
 		}
 		Transaction transaction = transactionService.retrieveTransaction(transactionId);
@@ -116,7 +115,36 @@ public class AccountService {
 	}
 	
 	//A user can withdraw from an account.
-	public Integer makeWithdrawal(Integer accountId, Double amount) {
+	public Transaction makeWithdrawal(Integer accountId, Double amount) {
+		Log.traceEntry("Service withdrawing " + amount + " from account " + accountId);
+		if(amount <= 0) {
+			Log.traceExit("Service can only make withdrawals from amounts greater than 0");
+			return null;
+		}
+		Account account = retrieveAccount(accountId);
+		if(account == null) {
+			Log.traceExit("Service failed to make withdrawal");
+			return null;
+		}
+		if(amount > account.getBalance()) {
+			Log.traceExit("Service can't withdraw more than the account balance");
+			return null;
+		}
+		Integer transactionId = null;
+		try {
+			transactionId = accountOracle.callWithdrawBalance(accountId, amount).get();
+		}catch (NoSuchElementException e) {
+			transactionId = null;
+		}
+		if(transactionId == null) {
+			Log.traceExit("Service failed to make withdrawal");
+			return null;
+		}
+		Transaction transaction = transactionService.retrieveTransaction(transactionId);
+		if(transaction != null) {
+			Log.traceExit("Service completed withdrawal and returning " + transaction);
+			return transaction;
+		}
 		return null;
 	}
 }

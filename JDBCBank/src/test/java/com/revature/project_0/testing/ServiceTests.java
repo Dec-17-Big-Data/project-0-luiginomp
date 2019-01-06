@@ -81,11 +81,24 @@ public class ServiceTests {
 //	
 //	@Test
 //	public void testMakeDepositToExistingAccount() {
-//		Integer expected = 1;
-//		Transaction transaction = accountService.makeDeposit(1, 10.55);
-//		Integer actual = transaction.getId();
-//		assertEquals(expected, actual);
+//		Integer expectedId = 1;
+//		Transaction transaction = accountService.makeDeposit(1, 20.00);
+//		Integer actualId = transaction.getId();
+//		assertEquals(expectedId, actualId);
 //	}
+//	
+//	@Test
+//	public void testMakeDepositToNonexistentAccount() {
+//		assertEquals(null, accountService.makeDeposit(100, 10.55));
+//	}
+//	
+	@Test
+	public void testMakeWithdrawalToExistingAccountWithAvailableBalance() {
+		Integer expectedId = 2;
+		Transaction transaction = accountService.makeWithdrawal(1, 10.55);
+		Integer actualId = transaction.getId();
+		assertEquals(expectedId, actualId);
+	}
 	
 	@AfterClass
 	public static void End() {

@@ -102,7 +102,7 @@ public class AccountOracle implements AccountDAO {
 	}
 	
 	public Optional<Integer> callDepositBalance(Integer accountId, Double amount){
-		Log.traceEntry("Oracle calling deposit_balance to account " + accountId + " for " + amount);
+		Log.traceEntry("Oracle calling deposit_balance for " + amount + " from  account " + accountId);
 		Connection conn = ConnectionUtil.getConnection();
 		String sql = "{CALL deposit_balance (?, ?, ?)}";
 		Integer transactionId = null;
@@ -119,40 +119,34 @@ public class AccountOracle implements AccountDAO {
 			ConnectionUtil.tryToClose(conn);
 		}
 		if(transactionId != null) {
-			Log.traceExit("Oracle completed call");
+			Log.traceExit("Oracle completed call and returned transaction ID " + transactionId);
 			return Optional.of(transactionId);
 		}
 		return Optional.empty();
 	}
 	
 	public Optional<Integer> callWithdrawBalance(Integer accountId, Double amount){
+		Log.traceEntry("Oracle calling withdraw_balance for " + amount + " from account " + accountId);
+		Connection conn = ConnectionUtil.getConnection();
+		String sql = "{CALL withdraw_balance (?, ?, ?)}";
+		Integer transactionId = null;
+		try {
+			CallableStatement stmt = conn.prepareCall(sql);
+			stmt.setInt(1, accountId);
+			stmt.setDouble(2,  amount);
+			stmt.registerOutParameter(3,  Types.INTEGER);
+			stmt.execute();
+			transactionId = stmt.getInt(3);
+		}catch (SQLException e) {
+			Log.error("SQL Exception occurred: ", e);
+		}finally {
+			ConnectionUtil.tryToClose(conn);
+		}
+		if(transactionId != null) {
+			Log.traceExit("Oracle completed call and returned transaction ID" + transactionId);
+			return Optional.of(transactionId);
+		}
+		Log.traceExit("Oracle failed to complete call");
 		return Optional.empty();
 	}
-	
-//	public Boolean callWithdrawBalance(Integer accountId, Double amount) {
-//		Log.traceEntry("Calling withdraw_balance");
-//		Connection conn = ConnectionUtil.getConnection();
-//		String sql = "{Call withdraw_balance (?, ?)}";
-//		CallableStatement stmt = null;
-//		try {
-//			stmt = conn.prepareCall(sql);
-//			stmt.setInt(1, accountId);
-//			stmt.setDouble(2, amount);
-//			stmt.execute();
-//			Log.traceExit("Completed call to withdraw_balance");
-//			return true;
-//		}catch (SQLException e) {
-//			Log.error("SQL Exception occurred: ", e);
-//		}finally {
-//			if(conn != null) {
-//				try {
-//					conn.close();
-//				}catch(SQLException e) {
-//					Log.error("SQL Exception occurred while attempting to close connection", e);
-//				}
-//			}
-//		}
-//		Log.traceExit("Failed to call withdraw_balance");
-//		return false;
-//	}
 }

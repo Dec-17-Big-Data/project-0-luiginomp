@@ -144,11 +144,12 @@ END;
 /
 
 CREATE OR REPLACE PROCEDURE withdraw_balance
-    (input_id IN NUMBER, input_amount IN DECIMAL) AS
+    (input_id IN NUMBER, input_amount IN DECIMAL, output_id OUT NUMBER) AS
 BEGIN
     UPDATE bank_account
         SET account_balance = account_balance - input_amount
         WHERE account_id = input_id;
+    output_id := transaction_id_sequence.CURRVAL;
 END;
 /
 
