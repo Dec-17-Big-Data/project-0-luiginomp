@@ -21,7 +21,7 @@ public class AccountOracle implements AccountDAO {
 
 	private static AccountOracle instance;
 	
-	public AccountOracle() {
+	private AccountOracle() {
 	}
 	
 	public static AccountDAO getDAO() {

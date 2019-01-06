@@ -2,17 +2,14 @@ package com.revature.project_0.testing;
 
 import static org.junit.Assert.*;
 
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import com.revature.project_0.dao.*;
-import com.revature.project_0.dao.UserOracle;
-import com.revature.project_0.models.Account;
+import com.revature.project_0.models.*;
 
 public class OracleTests {
 
@@ -20,6 +17,7 @@ public class OracleTests {
 	private static UserDAO userOracle;
 	private static AdminDAO adminOracle;
 	private static AccountDAO accountOracle;
+	private static TransactionDAO transactionOracle;
 	
 	@BeforeClass
 	public static void begin() {
@@ -27,6 +25,7 @@ public class OracleTests {
 		userOracle = UserOracle.getDAO();
 		adminOracle = AdminOracle.getDAO();
 		accountOracle = AccountOracle.getDAO();
+		transactionOracle = TransactionOracle.getDAO();
 	}
 	//==================================================================================================
 	//==================================================================================================
@@ -61,6 +60,8 @@ public class OracleTests {
 //		assertEquals(true, userOracle.createUser("Goldfinger", "BadArchitect"));
 //	}
 //
+//	//AdminOracle
+//	//===========================================================================================
 //	@Test
 //	public void getAllUsersFromTable() {
 //		//Assumes that the expected list matches the database
@@ -75,8 +76,6 @@ public class OracleTests {
 //		adminOracle.getAllUsers().get();
 //	}
 //	
-//	//AdminOracle
-//	//===========================================================================================
 //	@Test
 //	public void deleteExistingUser() {
 //		assertEquals(true, adminOracle.deleteUser("LeChiffre"));
@@ -127,7 +126,14 @@ public class OracleTests {
 //	public void testCallWithdrawBalance() {
 //		assertEquals(true, accountOracle.callWithdrawBalance(1, 13.13));
 //	}
-
+//
+//	//AccountOracle
+//	//===========================================================================================
+//	@Test
+//	public void testGetAllTransactions() {
+//		//Not completed. Should check for returned list
+//		transactionOracle.getallTransactions(1);
+//	}
 	
 	//==================================================================================================
 	//==================================================================================================
