@@ -60,7 +60,7 @@ CREATE SEQUENCE transaction_id_sequence
 
 ----------------------------------------------------------------TRIGGERS
 CREATE OR REPLACE TRIGGER insert_transaction
-AFTER UPDATE ON bank_account
+BEFORE UPDATE ON bank_account
 FOR EACH ROW
 DECLARE
     amount DECIMAL;
@@ -116,10 +116,11 @@ END;
 /
 
 CREATE OR REPLACE PROCEDURE insert_account
-    (input_id IN NUMBER) AS
+    (input_id IN NUMBER, output_id OUT NUMBER) AS
 BEGIN
     INSERT INTO bank_account
         VALUES (account_id_sequence.NEXTVAL,0, input_id);
+    output_id := account_id_sequence.CURRVAL;
     COMMIT;
 END;
 /
@@ -133,11 +134,12 @@ END;
 /
 
 CREATE OR REPLACE PROCEDURE deposit_balance
-    (input_id IN NUMBER, input_amount IN DECIMAL) AS
+    (input_id IN NUMBER, input_amount IN DECIMAL, output_id OUT NUMBER) AS
 BEGIN
     UPDATE bank_account
         SET account_balance = account_balance + input_amount
         WHERE account_id = input_id;
+    output_id := transaction_id_sequence.CURRVAL;
 END;
 /
 
@@ -153,10 +155,3 @@ END;
 commit;
 
 CALL insert_user('LeChiffre', 'baccarat');
-CALL insert_account (1);
-CALL deposit_balance (1, 5.00);
-CALL withdraw_balance (1, 3.50);
-
-SELECT * FROM bank_user;
-SELECT * FROM bank_account;
-SELECT * FROM account_transaction WHERE account_id = 1;

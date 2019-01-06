@@ -28,97 +28,51 @@ public class UserOracle implements UserDAO{
 		}
 		return instance;
 	}
-
-	public Boolean createUser(String username, String password) {
-		Log.traceEntry("Create user with name " + username + ", password " + password);
-		if((Optional) getUser(username) != Optional.empty()) {
-			Log.traceExit("Username already exists. Failed to create user");
-			return false;
-		}
+	
+	public Boolean callInsertUser(String username, String password){
+		Log.traceEntry("Calling insert_user and passing strings " + username + ", " + password);
 		Connection conn = ConnectionUtil.getConnection();
-		if(conn == null) {
-			Log.traceExit("Connection to database not found. Failed to perform request");
-			return false;
-		}
-		Log.trace("Username is valid");
-		String sql = "{call insert_user (?, ?)}";
-		CallableStatement stmt = null;
+		String sql = "CALL insert_user (?, ?)";
 		try {
-			stmt = conn.prepareCall(sql);
+			CallableStatement stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
 			stmt.setString(2, password);
 			stmt.execute();
+			Log.traceExit("Completed call to insert_user");
 			return true;
-		}catch (SQLException e) {
-			Log.error("SQL Exception occurred while attempting to prepare statement", e);
-		}catch (Exception e) {
-			Log.error("Exception Occurred: ", e);
+		}catch(SQLException e) {
+			Log.error("SQL Exception occurred: ", e);
 		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.info("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+			ConnectionUtil.tryToClose(conn);
 		}
+		Log.traceExit("Unable to call insert_user");
 		return false;
 	}
-
-	public Optional<User> getUser(String username) {
-		Log.traceEntry("Retrieving user named " + username);
+	
+	public Optional<User> sendUserQuery(String username){
+		Log.traceEntry("Sending query for username " + username);
 		Connection conn = ConnectionUtil.getConnection();
-		if(conn == null) {
-			Log.traceExit("Connection to database not found. Failed to perform request");
-		}
-		User user = null;
-		String sql = "select * from bank_user where user_name = ?";
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+		String sql = "SELECT * FROM bank_user where user_name = ?";
 		try {
-		stmt = conn.prepareStatement(sql);
-		stmt.setString(1, username);
-		rs = stmt.executeQuery();
-		if(rs.next() == true) {
-			user = new User(rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"));
-			Log.info("Username found on file");
-			return Optional.of(user);
-		}
-		if(user == null) {
-			Log.info("Username not found");
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, username);
+			ResultSet rs = stmt.executeQuery();
+			if(rs.next()) {
+				User user = new User(
+						rs.getInt("user_id"),
+						rs.getString("user_name"),
+						rs.getString("user_password"));
+				Log.traceExit("Completed query");
+				return Optional.of(user);
+			}
+			Log.traceExit("Username doesn't exist");
 			return Optional.empty();
-		}
 		}catch (SQLException e) {
-			Log.error("SQL Exception occurred while attempting to get result set", e);
-		}catch (Exception e) {
-			Log.error("Exception Occurred: ", e);
+			Log.error("SQL Exception occurred: ", e);
 		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.traceExit("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+			ConnectionUtil.tryToClose(conn);
 		}
-		Log.traceExit("Username not found");
+		Log.traceExit("Unable to retrieve user");
 		return Optional.empty();
 	}
-	
 }

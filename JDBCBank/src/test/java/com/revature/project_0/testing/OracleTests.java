@@ -27,24 +27,20 @@ public class OracleTests {
 		accountOracle = AccountOracle.getDAO();
 		transactionOracle = TransactionOracle.getDAO();
 	}
-	//==================================================================================================
-	//==================================================================================================
-	//==================================================================================================
-	
 //	//UserOracle
 //	//===========================================================================================
 //	@Test
 //	public void lookUpExistingUser() {
 //		//Assumes all provided parameters exist and match in the database
 //		User userExpected = new User(1, "LeChiffre", "baccarat");
-//		Optional<User> userActual = userOracle.getUser("LeChiffre");
+//		Optional<User> userActual = userOracle.sendUserQuery("LeChiffre");
 //		assertEquals(userExpected, userActual.get());
 //	}
 //	
 //	@Test (expected = NoSuchElementException.class)
 //	public void lookUpNonexistantUser() {
 //		//Assumes current username doesn't exist in the database
-//		userOracle.getUser("SomeName").get();
+//		userOracle.sendUserQuery("SomeName").get();
 //	}
 //	
 //	@Test
@@ -135,9 +131,7 @@ public class OracleTests {
 //		transactionOracle.getallTransactions(1);
 //	}
 	
-	//==================================================================================================
-	//==================================================================================================
-	//==================================================================================================
+	
 	@AfterClass
 	public static void end() {
 		Log.info("End Oracle Testing" + System.lineSeparator());

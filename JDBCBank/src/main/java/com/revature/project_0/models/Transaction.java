@@ -17,9 +17,38 @@ public class Transaction implements Serializable{
 	}
 
 	public Transaction(Integer id, String timeStamp, Double amount) {
+		super();
 		this.id = id;
 		this.timeStamp = timeStamp;
 		this.amount = amount;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 	@Override
@@ -63,4 +92,6 @@ public class Transaction implements Serializable{
 	public String toString() {
 		return "Transaction [id=" + id + ", timeStamp=" + timeStamp + ", amount=" + amount + "]";
 	}
+	
+	
 }

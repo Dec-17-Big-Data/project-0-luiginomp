@@ -61,5 +61,33 @@ public class TransactionOracle implements TransactionDAO {
 		Log.traceExit("Failed to send request");
 		return Optional.empty();
 	}
-
+	
+	public Optional<Transaction> sendTransactionQuery(Integer transactionId){
+		Log.traceEntry("Oracle sending query for transaction ID " + transactionId);
+		Connection conn = ConnectionUtil.getConnection();
+		String sql = "SELECT * FROM account_transaction where transaction_id = ?";
+		Transaction transaction = null;
+		try {
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, transactionId);
+			ResultSet rs = stmt.executeQuery();
+			if(rs.next()) {
+				transaction = new Transaction(
+						rs.getInt("transaction_id"),
+						rs.getTimestamp("transaction_timestamp").toString(),
+						rs.getDouble("transaction_amount"));
+				Log.traceExit("Oracle found " + transaction.toString());
+				return Optional.of(transaction);
+			}else {
+				Log.traceExit("Oracle couldn't find any existing transactions with ID " + transactionId);
+				return Optional.empty();
+			}
+		}catch (SQLException e) {
+			Log.error("SQL Exception occurred: ", e);
+		}finally {
+			ConnectionUtil.tryToClose(conn);
+		}
+		Log.traceExit("Oracle failed to send query");
+		return Optional.empty();
+	}
 }

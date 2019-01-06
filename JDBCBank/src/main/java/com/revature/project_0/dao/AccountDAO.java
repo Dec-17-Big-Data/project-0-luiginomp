@@ -7,12 +7,12 @@ import com.revature.project_0.models.User;
 
 public interface AccountDAO {
 	//A user can create an account. 
-	public Optional<Integer> createAccount();
+	public Optional<Integer> callInsertAccount(Integer userId);
 	//A user can view their own existing account and balances. 
-	public Optional <Account> getAccount(Integer accountId);
+	public Optional <Account> sendAccountQuery(Integer accountId);
 	//A user can delete an account if it is empty.
-	public Boolean deleteAccount(Integer accountId);
+	public Boolean callDeleteAccount(Integer accountId);
 	//A user can add to or withdraw from an account. 
-	public Boolean callDepositBalance(Integer accountId, Double amount);
-	public Boolean callWithdrawBalance(Integer accountId, Double amount);
+	public Optional <Integer> callDepositBalance(Integer accountId, Double amount);
+	public Optional <Integer> callWithdrawBalance(Integer accountId, Double amount);
 }
