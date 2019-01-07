@@ -1,5 +1,7 @@
 package com.revature.project_0.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.*;
@@ -7,6 +9,7 @@ import org.apache.logging.log4j.*;
 import com.revature.project_0.dao.*;
 import com.revature.project_0.models.Account;
 import com.revature.project_0.models.Transaction;
+import com.revature.project_0.models.User;
 
 public class AccountService {
 	
@@ -146,5 +149,19 @@ public class AccountService {
 			return transaction;
 		}
 		return null;
+	}
+	
+	public List<Account> retrieveAccountsForUser(User user){
+		Log.traceEntry("Service retrieving all acounts for user " + user.getUserName());
+		List<Account> accountList = new ArrayList<Account>();
+		Integer userId = user.getUserId();
+		try {
+			accountList = accountOracle.sendAccountsQuery(userId).get();
+		}catch(NoSuchElementException e) {
+			Log.traceExit("Service found no accounts for user " + user.getUserName());
+			return accountList;
+		}
+		Log.traceExit("Service retrieved all acounts for user " + user.getUserName());
+		return accountList;
 	}
 }

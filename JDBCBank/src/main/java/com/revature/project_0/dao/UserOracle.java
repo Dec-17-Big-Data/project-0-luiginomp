@@ -50,7 +50,7 @@ public class UserOracle implements UserDAO{
 	}
 	
 	public Optional<User> sendUserQuery(String username){
-		Log.traceEntry("Sending query for username " + username);
+		Log.traceEntry("Oracle sending query for username " + username);
 		Connection conn = ConnectionUtil.getConnection();
 		String sql = "SELECT * FROM bank_user where user_name = ?";
 		try {
@@ -62,7 +62,7 @@ public class UserOracle implements UserDAO{
 						rs.getInt("user_id"),
 						rs.getString("user_name"),
 						rs.getString("user_password"));
-				Log.traceExit("Completed query");
+				Log.traceExit("Oracle found user " + user.toString());
 				return Optional.of(user);
 			}
 			Log.traceExit("Username doesn't exist");

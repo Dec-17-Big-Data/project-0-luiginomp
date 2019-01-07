@@ -6,12 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.revature.project_0.models.Account;
+import com.revature.project_0.models.User;
 import com.revature.project_0.utils.ConnectionUtil;
 
 public class AccountOracle implements AccountDAO {
@@ -80,6 +83,35 @@ public class AccountOracle implements AccountDAO {
 		}
 		Log.traceExit("Unable to send query");
 		return Optional.empty();
+	}
+	
+	public Optional<List<Account>> sendAccountsQuery(Integer userId){
+		Log.traceEntry("Oracle sending query for all accounts for user " + userId);
+		Connection conn = ConnectionUtil.getConnection();
+		String sql = "{SELECT * FROM bank_account WHERE user_id = ?}";
+		List<Account> accountList = new ArrayList<Account>();
+		try {
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, userId);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				Account account = new Account(
+						rs.getInt("account_id"),
+						rs.getDouble("account_balance"));
+				accountList.add(account);
+				Log.trace("Oracle found " + account.toString());
+			}
+		}catch (SQLException e) {
+			Log.error("SQL Exception occurred: ", e);
+		}finally {
+			ConnectionUtil.tryToClose(conn);
+		}
+		if(accountList.isEmpty()) {
+			Log.traceExit("Oracle found no accounts for this user");
+			return Optional.empty();
+		}
+		Log.traceExit("Oracle retrieved accounts for user");
+		return Optional.of(accountList);
 	}
 	
 	public Boolean callDeleteAccount(Integer accountId) {

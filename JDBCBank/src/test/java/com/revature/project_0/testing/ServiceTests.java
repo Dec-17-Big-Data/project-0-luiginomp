@@ -15,12 +15,14 @@ public class ServiceTests {
 	
 	private static Logger Log = LogManager.getLogger(ServiceTests.class);
 	private static UserService userService;
+	private static AdminService adminService;
 	private static AccountService accountService;
 	
 	@BeforeClass
 	public static void Begin() {
 		Log.info("Begin Service Testing");
 		userService = UserService.getService();
+		adminService = AdminService.getService();
 		accountService = AccountService.getService();
 	}
 //	//UserServices
@@ -54,6 +56,20 @@ public class ServiceTests {
 //
 //	//AdminServices
 //	//===========================================================================================
+//	@Test
+//	public void testAdminLogIn() {
+//		assertEquals(true, adminService.logIn("Overseer", "Vault#101"));
+//	}
+//	
+//	@Test
+//	public void testIncorrectLogIn() {
+//		assertEquals(false, adminService.logIn("RandomName", "RandomPassword"));
+//	}
+//	
+//	@Test
+//	public void testDeleteExistingUser() {
+//		assertEquals(true, adminService.deleteUser("LeChiffre"));
+//	}
 //
 //	//AccountServices
 //	//===========================================================================================
@@ -92,13 +108,13 @@ public class ServiceTests {
 //		assertEquals(null, accountService.makeDeposit(100, 10.55));
 //	}
 //	
-	@Test
-	public void testMakeWithdrawalToExistingAccountWithAvailableBalance() {
-		Integer expectedId = 2;
-		Transaction transaction = accountService.makeWithdrawal(1, 10.55);
-		Integer actualId = transaction.getId();
-		assertEquals(expectedId, actualId);
-	}
+//	@Test
+//	public void testMakeWithdrawalToExistingAccountWithAvailableBalance() {
+//		Integer expectedId = 2;
+//		Transaction transaction = accountService.makeWithdrawal(1, 10.55);
+//		Integer actualId = transaction.getId();
+//		assertEquals(expectedId, actualId);
+//	}
 	
 	@AfterClass
 	public static void End() {

@@ -71,8 +71,8 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		return Optional.empty();
 	}
 
-	public Boolean deleteUser(String username) {
-		Log.traceEntry("Attempt to call delete_user with username " + username);
+	public Boolean callDeleteUser(String username) {
+		Log.traceEntry("Oracle calling delete_user with username " + username);
 		Connection conn = ConnectionUtil.getConnection();
 		String sql = "{call delete_user (?)}";
 		CallableStatement stmt = null;
@@ -80,7 +80,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 			stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
 			stmt.execute();
-			Log.traceExit("Call to delete_user successfully sent");
+			Log.traceExit("Oracle completed call");
 			return true;
 		}catch (SQLException e) {
 			Log.error("SQL Exception Ocurred:", e);
@@ -89,6 +89,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
+		Log.traceExit("Oracle failed to complete call");
 		return false;
 	}
 
