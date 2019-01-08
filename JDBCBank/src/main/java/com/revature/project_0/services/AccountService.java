@@ -164,41 +164,50 @@ public class AccountService {
 			return null;
 		}
 		Log.info("makeDeposit returning transaction - deposit successful");
-		System.out.println("Deposit successful");
+		System.out.println("Deposit successful - " + transaction.toString());
 		return transaction;
 	}
 	
 	//A user can withdraw from an account.
-	public Transaction makeWithdrawal(Integer accountId, Double amount) {
-		Log.traceEntry("Service withdrawing " + amount + " from account " + accountId);
+	public Transaction makeWithdrawal(Integer accountId, Double amount, Integer userId) {
+		Log.info("makeWithdrawal called and passed account ID " + accountId + ", amount " + amount + ", and user ID " + userId);
+		Log.info("makeWithdrawal checking if amount is valid");
 		if(amount <= 0) {
-			Log.traceExit("Service can only make withdrawals from amounts greater than 0");
+			Log.info("makeWithdrawal returning null - amount was 0 or less");
+			System.out.println("You can't make deposits of 0 or less");
 			return null;
 		}
+		Log.info("makeWithdrawal calling retrieveAccount and passing account ID to retrieve acocunt object");
 		Account account = retrieveAccount(accountId);
 		if(account == null) {
-			Log.traceExit("Service failed to make withdrawal");
+			Log.info("makeWithdrawal returning null - failed to retrieveAccount");
+			System.out.println("Failed to retrieve account. Please try again");
 			return null;
 		}
+		Log.info("makeWithdrawal checking if funds are available");
 		if(amount > account.getBalance()) {
-			Log.traceExit("Service can't withdraw more than the account balance");
+			Log.info("makeWithdrawal returning null - not enough funds available");
+			System.out.println("Not enough funds to make withdrawal");
 			return null;
 		}
 		Integer transactionId = null;
 		try {
+			Log.info("makeWithdrawal calling callWithdrawBalance and passing account ID and amount to try and get transaction ID");
 			transactionId = accountOracle.callWithdrawBalance(accountId, amount).get();
 		}catch (NoSuchElementException e) {
-			transactionId = null;
-		}
-		if(transactionId == null) {
-			Log.traceExit("Service failed to make withdrawal");
+			Log.info("makeWithdrawal returning null - failed to retrieve transaction ID");
+			System.out.println("Failed to make withdrawal. Please try again");
 			return null;
 		}
+		Log.info("makeWithdrawal calling retrieveTransaction and passing transaction ID to retrieve transaction object");
 		Transaction transaction = transactionService.retrieveTransaction(transactionId);
-		if(transaction != null) {
-			Log.traceExit("Service completed withdrawal and returning " + transaction);
-			return transaction;
+		if(transaction == null) {
+			Log.info("makeWithdrawal returning null - failed to retrieve transaction");
+			System.out.println("Failed to verify if transaction succeedced");
+			return null;
 		}
-		return null;
+		Log.info("makeWithdrawal returning transaction - withdrawal successful");
+		System.out.println("Withdrawal successful - " + transaction.toString());
+		return transaction;
 	}
 }

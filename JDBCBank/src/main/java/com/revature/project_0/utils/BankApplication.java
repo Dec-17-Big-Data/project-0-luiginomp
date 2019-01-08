@@ -28,6 +28,7 @@ public class BankApplication {
 		userCreateAccount();
 		userViewAccounts();
 		userDepositToAccount(1,2.50);
+		userWithdrawFromAccount(1,2.50);
 		userDeleteAccount(1);
 		userViewAccounts();
 		
@@ -182,6 +183,24 @@ public class BankApplication {
 			return false;
 		}
 		Log.info("userDepositToAccount returning true - deposit successful" + System.lineSeparator());
+		return true;
+	}
+	
+	private static Boolean userWithdrawFromAccount(Integer accountId, Double amount) {
+		Log.info("userWithDrawFromAccount called and passed account ID " + accountId + " and amount" + amount);
+		Log.info("userWithDrawFromAccount checking if user is logged in");
+		if(loggedIn == false || currentUser == null) {
+			Log.info("userWithDrawFromAccount returned false - not currently logged in as user" + System.lineSeparator());
+			System.out.println("Must be signed in to a user in order to perform this action");
+			return false;
+		}
+		Log.info("userWithDrawFromAccount calling makeWithdrawal and passing account ID, amount, and user ID to retrieve transaction object");
+		Transaction transaction = accountService.makeWithdrawal(accountId, amount, currentUser.getUserId());
+		if(transaction == null) {
+			Log.info("userWithDrawFromAccount returning false - makeWithdrawal failed" + System.lineSeparator());
+			return false;
+		}
+		Log.info("userWithDrawFromAccount returning true - withdrawal successful" + System.lineSeparator());
 		return true;
 	}
 	

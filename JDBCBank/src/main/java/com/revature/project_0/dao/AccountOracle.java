@@ -62,30 +62,39 @@ public class AccountOracle implements AccountDAO {
 	}
 	
 	public Optional<Account> sendAccountQuery(Integer accountId){
-		Log.traceEntry("Sending query for account with ID " + accountId);
+		Log.info("sendAccountQuery called and passed account ID " + accountId);
+		Log.info("sendAccountQuery calling getConnection to establish connection");
 		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			Log.info("sendAccountQuery returning empty optional - failed to establish connection");
+			return Optional.empty();
+		}
+		Account account = null;
 		String sql = "SELECT * FROM bank_account WHERE account_id = ?";
 		try {
+			Log.info("sendAccountQuery preparing statement for string " + sql);
 			PreparedStatement stmt = conn.prepareStatement(sql);
+			Log.info("sendAccountQuery setting ? as account ID");
 			stmt.setInt(1, accountId);
+			Log.info("sendAccountQuery executing query and retrieving result set");
 			ResultSet rs = stmt.executeQuery();
 			if(rs.next()) {
-				Account account = new Account(
+				account = new Account(
 						rs.getInt("account_id"),
 						rs.getDouble("account_balance"));
-				Log.traceExit("Retrieved " + account.toString());
-				return Optional.of(account);
+				Log.info("sendAccountQuery retrieved " + account.toString());
 			}else {
-				Log.traceExit("Account doesn't exist");
+				Log.info("sendAccountQuery returning empty optional - result set was empty");
 				return Optional.empty();
 			}
 		}catch (SQLException e) {
-			Log.error("SQL Exception occurred: ", e);
+			Log.info("sendAccountQuery returning empty optional - encountered SQL Exception:", e);
+			return Optional.empty();
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		Log.traceExit("Unable to send query");
-		return Optional.empty();
+		Log.info("sendAccountQuery returning optional of account");
+		return Optional.of(account);
 	}
 	
 	public Optional<List<Account>> sendAccountsQuery(Integer userId){
@@ -187,28 +196,36 @@ public class AccountOracle implements AccountDAO {
 	}
 	
 	public Optional<Integer> callWithdrawBalance(Integer accountId, Double amount){
-		Log.traceEntry("Oracle calling withdraw_balance for " + amount + " from account " + accountId);
+		Log.info("callWithdrawBalance called and passed account ID " + accountId + " and amount " + amount);
+		Log.info("callWithdrawBalance calling getConnection to establish connection");
 		Connection conn = ConnectionUtil.getConnection();
-		String sql = "{CALL withdraw_balance (?, ?, ?)}";
+		if(conn == null) {
+			Log.info("callWithdrawBalance returning empty optional - failed to setablish connection");
+			return Optional.empty();
+		}
 		Integer transactionId = null;
+		String sql = "{CALL withdraw_balance (?, ?, ?)}";
 		try {
+			Log.info("callWithdrawBalance preparing callable statement for string " + sql);
 			CallableStatement stmt = conn.prepareCall(sql);
+			Log.info("callWithdrawBalance setting first ? as account ID");
 			stmt.setInt(1, accountId);
+			Log.info("callWithdrawBalance setting second ? as amount");
 			stmt.setDouble(2,  amount);
+			Log.info("callWithdrawBalance registering third ? as out parameter integer");
 			stmt.registerOutParameter(3,  Types.INTEGER);
+			Log.info("callWithdrawBalance executing call");
 			stmt.execute();
+			Log.info("callWithdrawBalance retrieving transaction ID");
 			transactionId = stmt.getInt(3);
 		}catch (SQLException e) {
-			Log.error("SQL Exception occurred: ", e);
+			Log.error("callWithdrawBalance returning empty optional - encountered SQL Exception:", e);
+			return Optional.empty();
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		if(transactionId != null) {
-			Log.traceExit("Oracle completed call and returned transaction ID" + transactionId);
-			return Optional.of(transactionId);
-		}
-		Log.traceExit("Oracle failed to complete call");
-		return Optional.empty();
+		Log.info("callWithdrawBalance returning optional of transaction ID");
+		return Optional.of(transactionId);
 	}
 
 	public Optional<Integer> sendAccountOwnerQuery(Integer accountId) {
