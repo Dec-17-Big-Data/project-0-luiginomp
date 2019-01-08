@@ -97,7 +97,7 @@ public class OracleTests {
 //	@Test
 //	public void createFirstAccount() {
 //		//Assumes there are no existing accounts in the bank_account table
-//		assertEquals(Optional.of(1), accountOracle.createAccount());
+//		assertEquals(Optional.of(1), accountOracle.callInsertAccount(1));
 //	}
 //	
 //	@Test
@@ -115,7 +115,7 @@ public class OracleTests {
 //	
 //	@Test
 //	public void testCallDepositBalance() {
-//		assertEquals(true, accountOracle.callDepositBalance(1, 25.0));
+//		assertEquals(Optional.of(1), accountOracle.callDepositBalance(1, 25.0));
 //	}
 //	
 //	@Test
@@ -123,12 +123,12 @@ public class OracleTests {
 //		assertEquals(true, accountOracle.callWithdrawBalance(1, 13.13));
 //	}
 //
-//	//AccountOracle
+//	//TransactionOracle
 //	//===========================================================================================
 //	@Test
 //	public void testGetAllTransactions() {
 //		//Not completed. Should check for returned list
-//		transactionOracle.getallTransactions(1);
+//		transactionOracle.sendTransactionsQuery(1);
 //	}
 	
 	

@@ -7,6 +7,6 @@ import com.revature.project_0.models.Transaction;
 
 public interface TransactionDAO {
 	//A user's transactions are recorded. A user may view transaction history. 
-	public Optional<List<Transaction>> getallTransactions(Integer accountId);
+	public Optional<List<Transaction>> sendTransactionsQuery(Integer accountId);
 	public Optional<Transaction> sendTransactionQuery(Integer transactionId);
 }

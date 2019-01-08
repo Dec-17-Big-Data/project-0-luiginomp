@@ -103,6 +103,7 @@ BEGIN
     UPDATE bank_user
         SET user_name = new_name
         WHERE user_name = current_name;
+    COMMIT;
 END;
 /
 
@@ -112,6 +113,7 @@ BEGIN
     UPDATE bank_user
         SET user_password = new_password
         WHERE user_name = input_name;
+    COMMIT;
 END;
 /
 
@@ -140,6 +142,7 @@ BEGIN
         SET account_balance = account_balance + input_amount
         WHERE account_id = input_id;
     output_id := transaction_id_sequence.CURRVAL;
+    COMMIT;
 END;
 /
 
@@ -150,9 +153,8 @@ BEGIN
         SET account_balance = account_balance - input_amount
         WHERE account_id = input_id;
     output_id := transaction_id_sequence.CURRVAL;
+    COMMIT;
 END;
 /
 
 commit;
-
-CALL insert_user('LeChiffre', 'baccarat');

@@ -27,7 +27,7 @@ public class UserService {
 	}
 	
 	//A registered user can login with their username and password
-	public Optional<User> logIn(String username, String password) {
+	public User userLogIn(String username, String password) {
 		Log.traceEntry("Check Credentials for username " + username + " and password " + password);
 		User user = null;
 		try{
@@ -37,23 +37,25 @@ public class UserService {
 		}
 		if(user == null) {
 			Log.traceExit("User doesn't exist");
-			return Optional.empty();
+			return null;
 		}
-		if(password.equals(user.getPassword())) {
-			Log.traceExit("Successfully logged in");
-			return Optional.of(user);
+		if(!password.equals(user.getPassword())) {
+			Log.traceExit("Invalid password");
+			
+			return null;
 		}
-		Log.traceExit("Invalid password");
-		return Optional.empty();
+		Log.traceExit("Successfully logged in");
+		return user;
 	}
 	
 	//An unregistered user can register by creating a username and password
-	public User register(String username, String password){
+	public User createUser(String username, String password){
 		Log.traceEntry(username + ", " + password);
 		User user = null;
 		try{
 			user = userOracle.sendUserQuery(username).get();
 			Log.traceExit("Username already exists");
+			System.out.println("Username already exists");
 			return null;
 		}catch (NoSuchElementException e) {
 		}
@@ -64,7 +66,7 @@ public class UserService {
 			return user;
 		}catch (NoSuchElementException e) {
 		}
-		Log.traceExit("Failed to create new user. Please try again.");
+		Log.traceExit("Something went wrong. Please try again.");
 		return null;
 	}
 }

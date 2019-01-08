@@ -30,7 +30,7 @@ public class TransactionOracle implements TransactionDAO {
 		return instance;
 	}
 
-	public Optional<List<Transaction>> getallTransactions(Integer accountId) {
+	public Optional<List<Transaction>> sendTransactionsQuery(Integer accountId) {
 		Log.traceEntry("Sending request for all transactions for account " + accountId);
 		Connection conn = ConnectionUtil.getConnection();
 		List<Transaction> transactionList = new ArrayList<Transaction>();

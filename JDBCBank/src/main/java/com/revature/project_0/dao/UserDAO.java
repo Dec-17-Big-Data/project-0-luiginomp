@@ -9,4 +9,5 @@ public interface UserDAO {
 	public Boolean callInsertUser (String username, String password);
 	//A registered user can login with their username and password  
 	public Optional <User> sendUserQuery (String username);
+	public Boolean userExists(String username);
 }

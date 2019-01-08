@@ -32,79 +32,84 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		return instance;
 	}
 
-	public Optional<List<User>> getAllUsers() {
-		Log.traceEntry("Get list of all users from database");
+	public Optional<List<User>> sendUsersQuery() {
+		Log.info("sendUsersQuery called");
+		Log.info("sendUsersQuery calling getConnection to establish connection");
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
-			Log.traceExit("Connection to database not found. Failed to perform request");
+			Log.info("sendUsersQuery returned optional empty - failed to establish connection");
 			return Optional.empty();
 		}
 		List<User> userList = new ArrayList<User>();
-		User user = null;
-		String sql = "select * from bank_user";
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+		String sql = "SELECT * FROM bank_user";
 		try {
-			stmt = conn.prepareStatement(sql);
-			rs = stmt.executeQuery();
+			Log.info("getsendUsersQueryAllUsers preparing statement for string " + sql);
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			Log.info("sendUsersQuery executing query and retrieving result set");
+			ResultSet rs = stmt.executeQuery();
+			Log.info("sendUsersQuery iterating through result set");
 			while(rs.next()) {
-				user = new User (
+				User user = new User (
 						rs.getInt("user_id"),
 						rs.getString("user_name"),
 						rs.getString("user_password"));
 				userList.add(user);
-			}
-			if(userList.isEmpty()) {
-				Log.traceExit("No users found in database");
-				return Optional.empty();
-			}else {
-				Log.traceExit("Completed search for users in database");
-				return Optional.of(userList);
+				Log.info("sendUsersQuery found " + user.getUserName());
 			}
 		}catch (SQLException e) {
-			Log.error("SQL Exception Ocurred:", e);
-		}catch (Exception e) {
-			Log.error("Exception Occurred: ", e);
+			Log.error("sendUsersQuery returned optional empty - encountered SQL Exception: ", e);
+			return Optional.empty();
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		return Optional.empty();
+		if(userList.isEmpty()) {
+			Log.info("sendUsersQuery returned optional empty - no users found");
+			return Optional.empty();
+		}
+		Log.info("sendUsersQuery returning optional of user list");
+		return Optional.of(userList);
 	}
 
 	public Boolean callDeleteUser(String username) {
-		Log.traceEntry("Oracle calling delete_user with username " + username);
+		Log.info("callDeleteUser called and passed username " + username);
+		Log.info("callDeleteUser calling getConnection to establish connection");
 		Connection conn = ConnectionUtil.getConnection();
-		String sql = "{call delete_user (?)}";
-		CallableStatement stmt = null;
+		if(conn == null) {
+			Log.info("callDeleteUser returning false - failed to establish connection");
+			return false;
+		}
+		String sql = "{call delete_user(?)}";
 		try {
-			stmt = conn.prepareCall(sql);
+			Log.info("callDeleteUser preparing callable statement for string " +sql);
+			CallableStatement stmt = conn.prepareCall(sql);
+			Log.info("callDeleteUser setting ? as " + username);
 			stmt.setString(1, username);
+			Log.info("callDeleteUser executing call");
 			stmt.execute();
-			Log.traceExit("Oracle completed call");
-			return true;
-		}catch (SQLException e) {
-			Log.error("SQL Exception Ocurred:", e);
-		}catch (Exception e) {
-			Log.error("Exception Occurred: ", e);
+		}catch(SQLException e) {
+			Log.info("callDeleteUser returning false - encountered SQL Exception: ", e);
+			return false;
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		Log.traceExit("Oracle failed to complete call");
-		return false;
+		Log.info("callDeleteUser returned true - successfully called stored procedure");
+		return true;
 	}
 
 	public Boolean deleteAllUsers() {
 		Log.traceEntry("Attempting to call delete_all_users");
 		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			return false;
+		}
 		String sql = "{call delete_all_users()}";
-		CallableStatement stmt = null;
 		try {
-			stmt = conn.prepareCall(sql);
+			CallableStatement stmt = conn.prepareCall(sql);
 			stmt.execute();
 			Log.traceExit("Call to delete_all_users successfully sent");
 			return true;
 		}catch (SQLException e) {
-			Log.error("SQL Exception Ocurred:", e);
+			Log.error("deleteAllUsers SQL Exception Ocurred:", e);
 		}catch (Exception e) {
 			Log.error("Exception Occurred: ", e);
 		}finally {
@@ -113,30 +118,41 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		Log.traceExit("Failed to call delete_all_users");
 		return false;
 	}
-
-	public Boolean callUpdateUsername(String curName, String newName) {
-		Log.traceEntry("Calling update_username");
+	
+	public Boolean callUpdateUsername(String username, String newName) {
+		Log.info("callUpdateUsername called and passed " + username + " and " + newName);
+		Log.info("callUpdateUsername calling getConnection to establish connection");
 		Connection conn = ConnectionUtil.getConnection();
-		String sql = "{call update_username (?, ?)}";
+		if(conn == null) {
+			Log.info("callUpdateUsername returning false - failed to establish connection");
+			return false;
+		}
+		String sql = "{CALL update_username (?, ?)}";
 		try {
+			Log.info("callUpdateUsername preparing callable statment for string " + sql);
 			CallableStatement stmt = conn.prepareCall(sql);
-			stmt.setString(1, curName);
+			Log.info("callUpdateUsername setting first ? to " + username);
+			stmt.setString(1, username);
+			Log.info("callUpdateUsername setting second ? to " + newName);
 			stmt.setString(2, newName);
+			Log.info("callUpdateUsername executing call");
 			stmt.execute();
-			Log.traceExit("Completed call to update_username");
-			return true;
 		}catch (SQLException e) {
-			Log.error("SQL Exception occurred: ", e);
+			Log.error("callUpdateUsername returned false - encountered SQL Exception: ", e);
+			return false;
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		Log.traceExit("Failed to call update_username");
-		return false;
+		Log.info("callUpdateUsername returned true - successfully called stored function");
+		return true;
 	}
 	
 	public Boolean callUpdatePassword(String username, String newPassword) {
 		Log.traceEntry("Calling update_password");
 		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			return false;
+		}
 		String sql = "{call update_password (?, ?)}";
 		try {
 			CallableStatement stmt = conn.prepareCall(sql);
@@ -146,7 +162,7 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 			Log.traceExit("Completed call to update_password");
 			return true;
 		}catch (SQLException e) {
-			Log.error("SQL Exception occurred: ", e);
+			Log.error("callUpdatePassword SQL Exception occurred: ", e);
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}

@@ -32,7 +32,7 @@ public class TransactionService {
 		try {
 			transaction = transactionOracle.sendTransactionQuery(transactionId).get();
 		}catch(NoSuchElementException e) {
-			transaction = null;
+			return null;
 		}
 		return transaction;
 	}
