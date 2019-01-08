@@ -1,0 +1,15 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JDBCBank,com.revature.project_0.utils,ConnectionUtil,32,70,2,2,11,20,3,3,1,3
+JDBCBank,com.revature.project_0.utils,BankApplication.States,90,0,0,0,2,0,4,0,4,0
+JDBCBank,com.revature.project_0.utils,BankApplication,1072,0,94,0,250,0,69,0,17,0
+JDBCBank,com.revature.project_0.models,User,98,75,21,9,30,17,24,3,9,3
+JDBCBank,com.revature.project_0.models,Account,129,0,22,0,37,0,21,0,10,0
+JDBCBank,com.revature.project_0.models,Transaction,173,0,30,0,47,0,27,0,12,0
+JDBCBank,com.revature.project_0.dao,UserOracle,34,157,3,7,11,48,3,8,0,6
+JDBCBank,com.revature.project_0.dao,TransactionOracle,233,0,8,0,56,0,9,0,5,0
+JDBCBank,com.revature.project_0.dao,AdminOracle,344,67,11,5,88,24,11,5,4,4
+JDBCBank,com.revature.project_0.dao,AccountOracle,750,0,24,0,197,0,22,0,10,0
+JDBCBank,com.revature.project_0.services,TransactionService,43,0,2,0,14,0,5,0,4,0
+JDBCBank,com.revature.project_0.services,AccountService,496,0,26,0,139,0,22,0,9,0
+JDBCBank,com.revature.project_0.services,AdminService,437,0,22,0,108,0,19,0,8,0
+JDBCBank,com.revature.project_0.services,UserService,135,0,6,0,35,0,8,0,5,0

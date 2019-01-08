@@ -1,4 +1,4 @@
-package com.revature.project_0.testing.Oracles;
+package com.revature.project_0.Test;
 
 import static org.junit.Assert.*;
 
@@ -11,15 +11,17 @@ import org.junit.*;
 import com.revature.project_0.dao.*;
 import com.revature.project_0.models.*;
 
-public class UserOracleTests {
+public class OracleTest {
 
-	private static Logger Log = LogManager.getLogger(UserOracleTests.class);
+	private static Logger Log = LogManager.getLogger(OracleTest.class);
 	private static UserDAO userOracle;
+	private static AdminDAO adminOracle;
 	
 	@BeforeClass
 	public static void begin() {
-		Log.info("BEGIN USER ORACLE TESTING");
+		Log.info("BEGIN ORACLE TESTING");
 		userOracle = UserOracle.getDAO();
+		adminOracle = AdminOracle.getDAO();
 	}
 	
 	@Test
@@ -64,10 +66,32 @@ public class UserOracleTests {
 		assertEquals(false, userOracle.userExists("InvalidName"));
 		Log.info("End Unit Test" + System.lineSeparator());
 	}
+	
+	@Test
+	public void sendUsersQueryWithExistingUsers() {
+		logBegin();
+		List<User> userList = new ArrayList<User>();
+		userList.add(new User(1, "SeanConnery", "DrNo"));
+		userList.add(new User(2, "DavidNiven", "CasinoRoyale"));
+		userList.add(new User(3, "RogerMoore", "GoldenGun"));
+		userList.add(new User(4, "TimothyDalton", "LivingDaylights"));
+		userList.add(new User(5, "PierceBrosnan", "GoldenEye"));
+		userList.add(new User(6, "DanielCraig", "SkyFall"));
+		assertEquals(Optional.of(userList), adminOracle.sendUsersQuery());
+		logEnd();
+	}
+	
+	private void logBegin() {
+		Log.info("BeginUnitTest");
+	}
+	
+	private void logEnd() {
+		Log.info("End Unit Test" + System.lineSeparator());
+	}
 
 	@AfterClass
 	public static void end() {
-		Log.info("END USER ORACLE TESTING"
+		Log.info("END ORACLE TESTING"
 				+ System.lineSeparator() + "==========================================================================================="
 				+ System.lineSeparator() + "===========================================================================================");
 	}

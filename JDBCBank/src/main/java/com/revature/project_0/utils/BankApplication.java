@@ -22,17 +22,21 @@ public class BankApplication {
 	private static AccountService accountService;
 	private static enum States {Welcome, LogIn, Register, User, Admin, Terminated};
 	private static States curState = States.Welcome;
-	private static Boolean switched = false;
+	private static Boolean switchPrompt = true;
 	
 	public static void main (String[] args) {
+		Log.info("APPLICATION STARTED");
 		Scanner s = new Scanner(System.in);
 		userService = UserService.getService();
 		adminService = AdminService.getService();
 		accountService = AccountService.getService();
 		while(curState != States.Terminated){
-			switchPrompts();
+			if(switchPrompt == true) {
+				switchPrompts();
+				switchPrompt = false;
+			}
 			String input = s.nextLine();
-			if(input == "TERMINATE") {
+			if(input.equals("TERMINATE")) {
 				curState = States.Terminated;
 			}
 			switch(curState) {
@@ -45,61 +49,70 @@ public class BankApplication {
 				break;
 			case LogIn:
 				Log.info("main entered LogIn state");
-				String username = input;
-				System.out.print("Password: ");
-				String password = s.nextLine();
-				logIn(username, password);
+				checkLogInInput(input);
 				break;
 			case Register:
 				Log.info("main entered Register state");
 				break;
 			case User:
 				Log.info("main entered User state");
+				checkUserInput(input);
 				break;
 			case Admin:
 				Log.info("main entered Admin state");
 				break;
 			}
-			switched = false;
 		}
 		s.close();
+		System.out.println("Application terminated");
 		Log.info("APPLICATION TERMINATED");
 	}
 	
 	private static void switchPrompts() {
-		if(switched == false) {
-			switch(curState) {
-			default:
-				Log.info("stateMachine found unknown state " + curState);
-				System.out.println("Something happened, please refresh application");
-				break;
-			case Welcome:
-				Log.info("stateMachine entered Welcome state");
-				System.out.println("Welcome to JDBC Bank");
-				System.out.println("Enter the number of one of the following options:");
-				System.out.println("1. Log in");
-				System.out.println("2. Register");
-				System.out.println("3. Terminate Program");
-				System.out.print("Input: ");
-				break;
-			case LogIn:
-				Log.info("stateMachine entered LogIn state");
-				System.out.println("Login Menu");
-				System.out.println("Enter your username and password or enter 'return' to go back to main menu");
-				System.out.print("Username: ");
-				break;
-			case Register:
-				Log.info("stateMachine entered Register state");
-				break;
-			case User:
-				Log.info("stateMachine entered User state");
-				break;
-			case Admin:
-				Log.info("stateMachine entered Admin state");
-				break;
-			}
-			switched = true;
+		switch(curState) {
+		default:
+			Log.info("stateMachine found unknown state " + curState);
+			System.out.println("Something happened, please refresh application");
+			break;
+		case Welcome:
+			Log.info("stateMachine entered Welcome state");
+			System.out.println("======================================================\n_WELCOME MENU_");
+			System.out.println("1. Log in");
+			System.out.println("2. Register");
+			System.out.println("Enter TERMINATE at any time to terminate the program");
+			System.out.print("Input: ");
+			break;
+		case LogIn:
+			Log.info("stateMachine entered LogIn state");
+			System.out.println("======================================================\n_LOGIN MENU_");
+			System.out.println("Enter your username and password with space between to log in, or enter 'return' to go back to main menu");
+			System.out.println("Enter TERMINATE at any time to terminate the program");
+			System.out.print("Input: ");
+			break;
+		case Register:
+			Log.info("stateMachine entered Register state");
+			System.out.println("======================================================\n_REGISTER MENU_");
+			System.out.println("Enter TERMINATE at any time to terminate the program");
+			System.out.print("Input: ");
+			break;
+		case User:
+			Log.info("stateMachine entered User state");
+			System.out.println("======================================================\n_USER MENU_");
+			System.out.println("1. Log out");
+			System.out.println("Enter TERMINATE at any time to terminate the program");
+			System.out.print("Input: ");
+			break;
+		case Admin:
+			Log.info("stateMachine entered Admin state");
+			System.out.println("======================================================\n_ADMIN MENU_");
+			System.out.println("Enter TERMINATE at any time to terminate the program");
+			System.out.print("Input: ");
+			break;
 		}
+	}
+	
+	private static void switchPrompt() {
+		switchPrompt = true;
 	}
 	
 	private static void checkWelcomeInput(String input) {
@@ -109,13 +122,54 @@ public class BankApplication {
 			break;
 		case "1":
 			curState = States.LogIn;
+			switchPrompt();
 			break;
 		case "2":
 			curState = States.Register;
+			switchPrompt();
 			break;
 		case "3":
 			curState = States.Terminated;
 		}
+	}
+	
+	private static Boolean checkLogInInput(String input) {
+		if(input.equals("return")) {
+			System.out.println("Returning to Welcome page");
+			curState = States.Welcome;
+			switchPrompt();
+			return true;
+		}
+		String[] strings = input.split("\\s+");
+		if(strings.length != 2) {
+			Log.info("checkLogInInput returning false - input should be two words. Actual amount is " + strings.length);
+			System.out.println("Input not recognized. Please ensure correct username and password with space in between");
+			System.out.print("Input: ");
+			return false;
+		}
+		String username = strings[0];
+		String password = strings[1];
+		if(logIn(username, password) != true) {
+			Log.info("checkLogInInput returning false - failed to log in");
+			System.out.println("Username or password incorrect");
+			return false;
+		}
+		Log.info("checkLogInInput returning true - successfully logged in");
+		switchPrompt();
+		return true;
+	}
+	
+	private static Boolean checkUserInput(String input) {
+		switch(input) {
+		default:
+			System.out.println("Unknown command. Enter one of the given options");
+			break;
+		case "1":
+			curState = States.Welcome;
+			switchPrompt();
+			break;
+		}
+		return true;
 	}
 	
 	//A registered user can login with their username and password  
@@ -134,6 +188,7 @@ public class BankApplication {
 			currentUser = null;
 			Log.info("logIn returned true - logged in as admin" + System.lineSeparator());
 			System.out.println("Logged in as admin");
+			curState = States.Admin;
 			return true;
 		}
 		Log.info("LogIn calling userLogIn and passing username and password and retrieving user object");
@@ -143,6 +198,7 @@ public class BankApplication {
 		if(loggedIn == true) {
 			Log.info("logIn returned true - logged in as user" + System.lineSeparator());
 			System.out.println("Logged in as user " + username);
+			curState = States.User;
 			return true;
 		}
 		Log.info("logIn returned false - parameters didn't match anything" + System.lineSeparator());
