@@ -33,8 +33,6 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 	}
 
 	public Optional<List<User>> sendUsersQuery() {
-		Log.info("sendUsersQuery called");
-		Log.info("sendUsersQuery calling getConnection to establish connection");
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
 			Log.info("sendUsersQuery returned optional empty - failed to establish connection");
@@ -43,18 +41,14 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		List<User> userList = new ArrayList<User>();
 		String sql = "SELECT * FROM bank_user";
 		try {
-			Log.info("getsendUsersQueryAllUsers preparing statement for string " + sql);
 			PreparedStatement stmt = conn.prepareStatement(sql);
-			Log.info("sendUsersQuery executing query and retrieving result set");
 			ResultSet rs = stmt.executeQuery();
-			Log.info("sendUsersQuery iterating through result set");
 			while(rs.next()) {
 				User user = new User (
 						rs.getInt("user_id"),
 						rs.getString("user_name"),
 						rs.getString("user_password"));
 				userList.add(user);
-				Log.info("sendUsersQuery found " + user.getUserName());
 			}
 		}catch (SQLException e) {
 			Log.error("sendUsersQuery returned optional empty - encountered SQL Exception: ", e);

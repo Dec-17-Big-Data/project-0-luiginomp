@@ -158,3 +158,10 @@ END;
 /
 
 commit;
+
+CALL insert_user ('SeanConnery', 'DrNo');
+CALL insert_user ('DavidNiven', 'CasinoRoyale');
+CALL insert_user ('RogerMoore', 'GoldenGun');
+CALL insert_user ('TimothyDalton', 'LivingDaylights');
+CALL insert_user ('PierceBrosnan', 'GoldenEye');
+CALL insert_user ('DanielCraig', 'SkyFall');

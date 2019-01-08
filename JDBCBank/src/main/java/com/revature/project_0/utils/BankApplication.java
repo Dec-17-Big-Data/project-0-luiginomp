@@ -1,6 +1,8 @@
 package com.revature.project_0.utils;
 
+import java.lang.Thread.State;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,25 +20,102 @@ public class BankApplication {
 	private static UserService userService;
 	private static AdminService adminService;
 	private static AccountService accountService;
+	private static enum States {Welcome, LogIn, Register, User, Admin, Terminated};
+	private static States curState = States.Welcome;
+	private static Boolean switched = false;
 	
 	public static void main (String[] args) {
+		Scanner s = new Scanner(System.in);
 		userService = UserService.getService();
 		adminService = AdminService.getService();
 		accountService = AccountService.getService();
-		Log.info("APPLICATION STARTED");
-		logIn("SeanConnery", "DrNo");
-		userCreateAccount();
-		userViewAccounts();
-		userDepositToAccount(1,2.50);
-		userWithdrawFromAccount(1,2.50);
-		userDeleteAccount(1);
-		userViewAccounts();
-		
-		Log.info("APPLICATION ENDED"
-		+ System.lineSeparator()
-		+ "======================================================================================"
-		+ System.lineSeparator()
-		+ "======================================================================================");
+		while(curState != States.Terminated){
+			switchPrompts();
+			String input = s.nextLine();
+			if(input == "TERMINATE") {
+				curState = States.Terminated;
+			}
+			switch(curState) {
+			default:
+				Log.info("main found unknown state " + curState);
+				break;
+			case Welcome:
+				Log.info("main entered Welcome state");
+				checkWelcomeInput(input);
+				break;
+			case LogIn:
+				Log.info("main entered LogIn state");
+				String username = input;
+				System.out.print("Password: ");
+				String password = s.nextLine();
+				logIn(username, password);
+				break;
+			case Register:
+				Log.info("main entered Register state");
+				break;
+			case User:
+				Log.info("main entered User state");
+				break;
+			case Admin:
+				Log.info("main entered Admin state");
+				break;
+			}
+			switched = false;
+		}
+		s.close();
+		Log.info("APPLICATION TERMINATED");
+	}
+	
+	private static void switchPrompts() {
+		if(switched == false) {
+			switch(curState) {
+			default:
+				Log.info("stateMachine found unknown state " + curState);
+				System.out.println("Something happened, please refresh application");
+				break;
+			case Welcome:
+				Log.info("stateMachine entered Welcome state");
+				System.out.println("Welcome to JDBC Bank");
+				System.out.println("Enter the number of one of the following options:");
+				System.out.println("1. Log in");
+				System.out.println("2. Register");
+				System.out.println("3. Terminate Program");
+				System.out.print("Input: ");
+				break;
+			case LogIn:
+				Log.info("stateMachine entered LogIn state");
+				System.out.println("Login Menu");
+				System.out.println("Enter your username and password or enter 'return' to go back to main menu");
+				System.out.print("Username: ");
+				break;
+			case Register:
+				Log.info("stateMachine entered Register state");
+				break;
+			case User:
+				Log.info("stateMachine entered User state");
+				break;
+			case Admin:
+				Log.info("stateMachine entered Admin state");
+				break;
+			}
+			switched = true;
+		}
+	}
+	
+	private static void checkWelcomeInput(String input) {
+		switch(input) {
+		default:
+			System.out.println("Unknown command. Enter one of the given options");
+			break;
+		case "1":
+			curState = States.LogIn;
+			break;
+		case "2":
+			curState = States.Register;
+			break;
+		case "3":
+			curState = States.Terminated;
+		}
 	}
 	
 	//A registered user can login with their username and password  

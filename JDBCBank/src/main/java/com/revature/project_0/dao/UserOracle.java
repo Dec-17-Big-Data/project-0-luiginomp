@@ -31,56 +31,55 @@ public class UserOracle implements UserDAO{
 	}
 	
 	public Boolean callInsertUser(String username, String password){
-		Log.traceEntry("Calling insert_user and passing strings " + username + ", " + password);
 		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			Log.info("callInsertUser returning false - failed to establish connection");
+			return false;
+		}
 		String sql = "CALL insert_user (?, ?)";
 		try {
 			CallableStatement stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
 			stmt.setString(2, password);
 			stmt.execute();
-			Log.traceExit("Completed call to insert_user");
-			return true;
 		}catch(SQLException e) {
-			Log.error("SQL Exception occurred: ", e);
+			Log.error("callInsertUser returning false - encountered SQL Exception");
+			return false;
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		Log.traceExit("Unable to call insert_user");
-		return false;
+		Log.info("callInsertUser returning true - successfully called stored function");
+		return true;
 	}
 	
 	public Optional<User> sendUserQuery(String username){
-		Log.info("sendUserQuery called and passed username " + username);
-		Log.info("sendUserQuery calling getConnection to create connection");
 		Connection conn = ConnectionUtil.getConnection();
+		if(conn == null) {
+			Log.info("sendUserQuery returning empty optional - failed to establish connection");
+			return Optional.empty();
+		}
 		String sql = "SELECT * FROM bank_user where user_name = ?";
 		User user = null;
 		try {
-			Log.info("sendUserQuery preparing statement for string " + sql);
 			PreparedStatement stmt = conn.prepareStatement(sql);
-			Log.info("sendUserQuery setting first ? to username ");
 			stmt.setString(1, username);
-			Log.info("sendUserQuery executing query and retrieving result set");
 			ResultSet rs = stmt.executeQuery();
-			Log.info("sendUserQuery iterating through result set");
 			if(rs.next()) {
 				user = new User(
 						rs.getInt("user_id"),
 						rs.getString("user_name"),
 						rs.getString("user_password"));
+			}else {
+				Log.info("sendUserQuery returning empty optional - failed to retrieve user object with given username");
+				return Optional.empty();
 			}
 		}catch (SQLException e) {
-			Log.error("sendUserQuery returned optional empty - encountered SQLException: ", e);
+			Log.error("sendUserQuery returning empty optional - encountered SQL Exception");
 			return Optional.empty();
 		}finally {
 			ConnectionUtil.tryToClose(conn);
 		}
-		if(user == null) {
-			Log.info("sendUserQuery returned empty optional - failed to retrieve user object with given username");
-			return Optional.empty();
-		}
-		Log.info("sendUserQuery found and returning optional of" + user.toString());
+		Log.info("sendUserQuery found and returning optional of " + user.toString());
 		return Optional.of(user);
 	}
 	
