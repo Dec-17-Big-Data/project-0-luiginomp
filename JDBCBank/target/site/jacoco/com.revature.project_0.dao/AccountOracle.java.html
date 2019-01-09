@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountOracle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JDBCBank</a> &gt; <a href="index.source.html" class="el_package">com.revature.project_0.dao</a> &gt; <span class="el_source">AccountOracle.java</span></div><h1>AccountOracle.java</h1><pre class="source lang-java linenums">package com.revature.project_0.dao;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.revature.project_0.models.Account;
+import com.revature.project_0.models.User;
+import com.revature.project_0.utils.ConnectionUtil;
+
+public class AccountOracle implements AccountDAO {
+	
+<span class="fc" id="L23">	private static Logger Log = LogManager.getLogger(AdminOracle.class);</span>
+
+<span class="fc" id="L25">	private static AccountOracle instance;</span>
+	
+<span class="fc" id="L27">	private AccountOracle() {</span>
+<span class="fc" id="L28">	}</span>
+	
+	public static AccountDAO getDAO() {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		if(instance == null) {</span>
+<span class="fc" id="L32">			instance = new AccountOracle();</span>
+		}
+<span class="fc" id="L34">		return instance;</span>
+	}
+	
+	public Optional&lt;Integer&gt; callInsertAccount(Integer userId){
+<span class="fc" id="L38">		Log.info(&quot;callInsertAccount called and passed user ID &quot; + userId);</span>
+<span class="fc" id="L39">		Log.info(&quot;callInsertAccount calling getConnection to create connection&quot;);</span>
+<span class="fc" id="L40">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="fc" id="L41">		String sql = &quot;{CALL insert_account (?, ?)}&quot;;</span>
+<span class="fc" id="L42">		Integer newAccountId = null;</span>
+		try {
+<span class="fc" id="L44">			Log.info(&quot;callInsertAccount preparing call for string &quot; + sql);</span>
+<span class="fc" id="L45">			CallableStatement stmt = conn.prepareCall(sql);</span>
+<span class="fc" id="L46">			Log.info(&quot;callInsertAccount setting first ? to userId&quot;);</span>
+<span class="fc" id="L47">			stmt.setInt(1, userId);</span>
+<span class="fc" id="L48">			Log.info(&quot;callInsertAccount registering second ? as an integer for account ID&quot;);</span>
+<span class="fc" id="L49">			stmt.registerOutParameter(2,  Types.INTEGER);</span>
+<span class="fc" id="L50">			Log.info(&quot;callInsertAccount executing call&quot;);</span>
+<span class="fc" id="L51">			stmt.execute();</span>
+<span class="fc" id="L52">			Log.info(&quot;callInsertAccount retrieving integer for account ID&quot;);</span>
+<span class="fc" id="L53">			newAccountId = stmt.getInt(2);</span>
+<span class="fc" id="L54">		}catch (SQLException e) {</span>
+<span class="fc" id="L55">			Log.error(&quot;callInsertAccount returned empty optional - encountered SQL Exception: &quot;, e);</span>
+<span class="fc" id="L56">			return Optional.empty();</span>
+		}
+<span class="fc" id="L58">		Log.info(&quot;callInsertAccount returned optional of account ID &quot; + newAccountId);</span>
+<span class="fc" id="L59">		return Optional.of(newAccountId);</span>
+	}
+	
+	public Optional&lt;Account&gt; sendAccountQuery(Integer accountId){
+<span class="fc" id="L63">		Log.info(&quot;sendAccountQuery called and passed account ID &quot; + accountId);</span>
+<span class="fc" id="L64">		Log.info(&quot;sendAccountQuery calling getConnection to establish connection&quot;);</span>
+<span class="fc" id="L65">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">		if(conn == null) {</span>
+<span class="nc" id="L67">			Log.info(&quot;sendAccountQuery returning empty optional - failed to establish connection&quot;);</span>
+<span class="nc" id="L68">			return Optional.empty();</span>
+		}
+<span class="fc" id="L70">		Account account = null;</span>
+<span class="fc" id="L71">		String sql = &quot;SELECT * FROM bank_account WHERE account_id = ?&quot;;</span>
+		try {
+<span class="fc" id="L73">			Log.info(&quot;sendAccountQuery preparing statement for string &quot; + sql);</span>
+<span class="fc" id="L74">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="fc" id="L75">			Log.info(&quot;sendAccountQuery setting ? as account ID&quot;);</span>
+<span class="fc" id="L76">			stmt.setInt(1, accountId);</span>
+<span class="fc" id="L77">			Log.info(&quot;sendAccountQuery executing query and retrieving result set&quot;);</span>
+<span class="fc" id="L78">			ResultSet rs = stmt.executeQuery();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			if(rs.next()) {</span>
+<span class="fc" id="L80">				account = new Account(</span>
+<span class="fc" id="L81">						rs.getInt(&quot;account_id&quot;),</span>
+<span class="fc" id="L82">						rs.getDouble(&quot;account_balance&quot;));</span>
+<span class="fc" id="L83">				Log.info(&quot;sendAccountQuery retrieved &quot; + account.toString());</span>
+<span class="fc" id="L84">			}else {</span>
+<span class="fc" id="L85">				Log.info(&quot;sendAccountQuery returning empty optional - result set was empty&quot;);</span>
+<span class="fc" id="L86">				return Optional.empty();</span>
+			}
+<span class="nc" id="L88">		}catch (SQLException e) {</span>
+<span class="nc" id="L89">			Log.info(&quot;sendAccountQuery returning empty optional - encountered SQL Exception:&quot;, e);</span>
+<span class="nc" id="L90">			return Optional.empty();</span>
+		}
+<span class="fc" id="L92">		Log.info(&quot;sendAccountQuery returning optional of account&quot;);</span>
+<span class="fc" id="L93">		return Optional.of(account);</span>
+	}
+	
+	public Optional&lt;List&lt;Account&gt;&gt; sendAccountsQuery(Integer userId){
+<span class="fc" id="L97">		Log.info(&quot;sendAccountsQuery called and passed user ID &quot; + userId);</span>
+<span class="fc" id="L98">		Log.info(&quot;sendAccountsQuery calling getConnection to try and establish connection&quot;);</span>
+<span class="fc" id="L99">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		if(conn == null) {</span>
+<span class="nc" id="L101">			Log.info(&quot;sendAccountsQuery returned null - failed to establish connection&quot;);</span>
+<span class="nc" id="L102">			return null;</span>
+		}
+<span class="fc" id="L104">		String sql = &quot;SELECT * FROM bank_account WHERE user_id = ?&quot;;</span>
+<span class="fc" id="L105">		List&lt;Account&gt; accountList = new ArrayList&lt;Account&gt;();</span>
+		try {
+<span class="fc" id="L107">			Log.info(&quot;sendAccountsQuery preparing statement for string &quot; + sql);</span>
+<span class="fc" id="L108">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="fc" id="L109">			Log.info(&quot;sendAccountsQuery setting first ? as userId&quot;);</span>
+<span class="fc" id="L110">			stmt.setInt(1, userId);</span>
+<span class="fc" id="L111">			Log.info(&quot;sendAccountsQuery executing query and retrieving result set&quot;);</span>
+<span class="fc" id="L112">			ResultSet rs = stmt.executeQuery();</span>
+<span class="fc" id="L113">			Log.info(&quot;sendAccountsQuery iterating through results&quot;);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			while (rs.next()) {</span>
+<span class="fc" id="L115">				Account account = new Account(</span>
+<span class="fc" id="L116">						rs.getInt(&quot;account_id&quot;),</span>
+<span class="fc" id="L117">						rs.getDouble(&quot;account_balance&quot;));</span>
+<span class="fc" id="L118">				accountList.add(account);</span>
+<span class="fc" id="L119">				Log.trace(&quot;Oracle found &quot; + account.toString());</span>
+			}
+<span class="pc" id="L121">		}catch (SQLException e) {</span>
+<span class="nc" id="L122">			Log.error(&quot;sendAccountsQuery returned empty optional - encountered SQL Exception: &quot;, e);</span>
+<span class="nc" id="L123">			return Optional.empty();</span>
+		}
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		if(accountList.isEmpty()) {</span>
+<span class="fc" id="L126">			Log.info(&quot;sendAccountsQuery returned empty optional - no accounts found&quot;);</span>
+<span class="fc" id="L127">			return Optional.empty();</span>
+		}
+<span class="fc" id="L129">		Log.info(&quot;sendAccountsQuery returning optional of account list&quot;);</span>
+<span class="fc" id="L130">		return Optional.of(accountList);</span>
+	}
+	
+	public Boolean callDeleteAccount(Integer accountId) {
+<span class="fc" id="L134">		Log.info(&quot;callDeleteAccount called and passed account ID &quot; + accountId);</span>
+<span class="fc" id="L135">		Log.info(&quot;callDeleteAccount calling getConnection to establish connection&quot;);</span>
+<span class="fc" id="L136">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		if(conn == null) {</span>
+<span class="nc" id="L138">			Log.info(&quot;callDeleteAccount returning false - failed to establish connection&quot;);</span>
+<span class="nc" id="L139">			return false;</span>
+		}
+<span class="fc" id="L141">		String sql = &quot;{CALL delete_account (?)}&quot;;</span>
+		try {
+<span class="fc" id="L143">			Log.info(&quot;callDeleteAccount preparing callable statement for string &quot; + sql);</span>
+<span class="fc" id="L144">			CallableStatement stmt = conn.prepareCall(sql);</span>
+<span class="fc" id="L145">			Log.info(&quot;callDeleteAccount setting ? ass integer &quot; + accountId);</span>
+<span class="fc" id="L146">			stmt.setInt(1, accountId);</span>
+<span class="fc" id="L147">			Log.info(&quot;callDeleteAccount executing call&quot;);</span>
+<span class="fc" id="L148">			stmt.execute();</span>
+<span class="pc" id="L149">		}catch (SQLException e) {</span>
+<span class="nc" id="L150">			Log.error(&quot;callDeleteAccount returning false - encountered SQL Exception:&quot;, e);</span>
+<span class="nc" id="L151">			return false;</span>
+		}
+<span class="fc" id="L153">		Log.info(&quot;callDeleteAccount returning true - successfully called stored procedure&quot;);</span>
+<span class="fc" id="L154">		return true;</span>
+	}
+	
+	public Optional&lt;Integer&gt; callDepositBalance(Integer accountId, Double amount){
+<span class="fc" id="L158">		Log.info(&quot;callDepositBalance called and passed account ID &quot; + accountId + &quot; and amount &quot; + amount);</span>
+<span class="fc" id="L159">		Log.info(&quot;callDepositBalance calling getConnection to establish connection&quot;);</span>
+<span class="fc" id="L160">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">		if(conn == null) {</span>
+<span class="nc" id="L162">			Log.info(&quot;callDepositBalance returning empty optional - failed to establish connection&quot;);</span>
+<span class="nc" id="L163">			return Optional.empty();</span>
+		}
+<span class="fc" id="L165">		Integer transactionId = null;</span>
+<span class="fc" id="L166">		String sql = &quot;{CALL deposit_balance (?, ?, ?)}&quot;;</span>
+		try {
+<span class="fc" id="L168">			Log.info(&quot;callDepositBalance preparing callable statement for string &quot; + sql);</span>
+<span class="fc" id="L169">			CallableStatement stmt = conn.prepareCall(sql);</span>
+<span class="fc" id="L170">			Log.info(&quot;callDepositBalance setting first ? to account ID&quot;);</span>
+<span class="fc" id="L171">			stmt.setInt(1, accountId);</span>
+<span class="fc" id="L172">			Log.info(&quot;callDepositBalance setting second ? to amount&quot;);</span>
+<span class="fc" id="L173">			stmt.setDouble(2, amount);</span>
+<span class="fc" id="L174">			Log.info(&quot;callDepositBalance registering third ? as out parameter integer&quot;);</span>
+<span class="fc" id="L175">			stmt.registerOutParameter(3, Types.INTEGER);</span>
+<span class="fc" id="L176">			Log.info(&quot;callDepositBalance executing call&quot;);</span>
+<span class="fc" id="L177">			stmt.execute();</span>
+<span class="fc" id="L178">			Log.info(&quot;callDepositBalance retrieving transaction ID&quot;);</span>
+<span class="fc" id="L179">			transactionId = stmt.getInt(3);</span>
+<span class="pc" id="L180">		}catch (SQLException e) {</span>
+<span class="nc" id="L181">			Log.error(&quot;callDepositBalance returning empty optional - encountered SQL Exception:&quot;, e);</span>
+<span class="nc" id="L182">			return Optional.empty();</span>
+		}
+<span class="fc" id="L184">		Log.info(&quot;callDepositBalance returning optional of transaction ID - successfully called stored procedure&quot;);</span>
+<span class="fc" id="L185">		return Optional.of(transactionId);</span>
+	}
+	
+	public Optional&lt;Integer&gt; callWithdrawBalance(Integer accountId, Double amount){
+<span class="nc" id="L189">		Log.info(&quot;callWithdrawBalance called and passed account ID &quot; + accountId + &quot; and amount &quot; + amount);</span>
+<span class="nc" id="L190">		Log.info(&quot;callWithdrawBalance calling getConnection to establish connection&quot;);</span>
+<span class="nc" id="L191">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">		if(conn == null) {</span>
+<span class="nc" id="L193">			Log.info(&quot;callWithdrawBalance returning empty optional - failed to setablish connection&quot;);</span>
+<span class="nc" id="L194">			return Optional.empty();</span>
+		}
+<span class="nc" id="L196">		Integer transactionId = null;</span>
+<span class="nc" id="L197">		String sql = &quot;{CALL withdraw_balance (?, ?, ?)}&quot;;</span>
+		try {
+<span class="nc" id="L199">			Log.info(&quot;callWithdrawBalance preparing callable statement for string &quot; + sql);</span>
+<span class="nc" id="L200">			CallableStatement stmt = conn.prepareCall(sql);</span>
+<span class="nc" id="L201">			Log.info(&quot;callWithdrawBalance setting first ? as account ID&quot;);</span>
+<span class="nc" id="L202">			stmt.setInt(1, accountId);</span>
+<span class="nc" id="L203">			Log.info(&quot;callWithdrawBalance setting second ? as amount&quot;);</span>
+<span class="nc" id="L204">			stmt.setDouble(2,  amount);</span>
+<span class="nc" id="L205">			Log.info(&quot;callWithdrawBalance registering third ? as out parameter integer&quot;);</span>
+<span class="nc" id="L206">			stmt.registerOutParameter(3,  Types.INTEGER);</span>
+<span class="nc" id="L207">			Log.info(&quot;callWithdrawBalance executing call&quot;);</span>
+<span class="nc" id="L208">			stmt.execute();</span>
+<span class="nc" id="L209">			Log.info(&quot;callWithdrawBalance retrieving transaction ID&quot;);</span>
+<span class="nc" id="L210">			transactionId = stmt.getInt(3);</span>
+<span class="nc" id="L211">		}catch (SQLException e) {</span>
+<span class="nc" id="L212">			Log.error(&quot;callWithdrawBalance returning empty optional - encountered SQL Exception:&quot;, e);</span>
+<span class="nc" id="L213">			return Optional.empty();</span>
+		}
+<span class="nc" id="L215">		Log.info(&quot;callWithdrawBalance returning optional of transaction ID&quot;);</span>
+<span class="nc" id="L216">		return Optional.of(transactionId);</span>
+	}
+
+	public Optional&lt;Integer&gt; sendAccountOwnerQuery(Integer accountId) {
+<span class="fc" id="L220">		Log.info(&quot;sendAccountOwnerQuery called and passed account ID &quot; + accountId);</span>
+<span class="fc" id="L221">		Log.info(&quot;sendAccountOwnerQuery calling getConnection to establish connection&quot;);</span>
+<span class="fc" id="L222">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">		if(conn == null) {</span>
+<span class="nc" id="L224">			Log.info(&quot;sendAccountOwnerQuery returning empty optional - failed to establish connection&quot;);</span>
+<span class="nc" id="L225">			return Optional.empty();</span>
+		}
+<span class="fc" id="L227">		Integer userId = null;</span>
+<span class="fc" id="L228">		String sql = &quot;SELECT user_id FROM bank_account WHERE account_id = ?&quot;;</span>
+		try {
+<span class="fc" id="L230">			Log.info(&quot;sendAccountOwnerQuery preparing statement for string &quot; + sql);</span>
+<span class="fc" id="L231">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="fc" id="L232">			Log.info(&quot;sendAccountOwnerQuery setting ? as integer &quot; + accountId);</span>
+<span class="fc" id="L233">			stmt.setInt(1, accountId);</span>
+<span class="fc" id="L234">			Log.info(&quot;sendAccountOwnerQuery executing query and retrieving result set&quot;);</span>
+<span class="fc" id="L235">			ResultSet rs = stmt.executeQuery();</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">			if(rs.next()) {</span>
+<span class="fc" id="L237">				userId = rs.getInt(&quot;user_id&quot;);</span>
+<span class="fc" id="L238">			}else {</span>
+<span class="fc" id="L239">				Log.info(&quot;sendAccountOwnerQuery returning empty optional - account wasn't found&quot;);</span>
+			}
+<span class="pc" id="L241">		}catch (SQLException e) {</span>
+<span class="nc" id="L242">			Log.error(&quot;sendAccountOwnerQuery returning empty optional - encountered SQL Exception: &quot;, e);</span>
+<span class="nc" id="L243">			return Optional.empty();</span>
+		}
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		if(userId == null) {</span>
+<span class="fc" id="L246">			Log.info(&quot;sendAccountOwnerQuery returning empty optional - user ID was null&quot;);</span>
+<span class="fc" id="L247">			return Optional.empty();</span>
+		}
+<span class="fc" id="L249">		Log.info(&quot;sendAccountOwnerQuery returning optional of user ID&quot;);</span>
+<span class="fc" id="L250">		return Optional.of(userId);</span>
+	}
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

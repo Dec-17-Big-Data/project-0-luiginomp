@@ -1,40 +1,152 @@
+----------------------------------------------------------------TABLES
+CREATE TABLE bank_user (
+    user_id NUMBER(10) PRIMARY KEY,
+    user_name VARCHAR(255) UNIQUE NOT NULL,
+    user_password VARCHAR(255) NOT NULL
+);
 
-create table bank_user (user_id number (10) primary key, user_name varchar2 (255)unique not null, user_password varchar2 (255) not null, account_id number (10));
+CREATE TABLE bank_account (
+    account_id NUMBER(10) PRIMARY KEY,
+    account_balance DECIMAL(10, 2) DEFAULT '0',
+    user_id NUMBER(10) NOT NULL
+);
 
-create table bank_account (account_id number (10) primary key, account_balance binary_float default '0', user_id number (10) unique not null);
+CREATE TABLE account_transaction (
+    transaction_id NUMBER(10) PRIMARY KEY,
+    transaction_timestamp TIMESTAMP NOT NULL,
+    transaction_amount DECIMAL(10, 2) Default '0',
+    account_id NUMBER(10) NOT NULL
+);
 
-alter table bank_user add constraint user_to_account_foreign_key foreign key (account_id) references bank_account (account_id) on delete cascade;
+----------------------------------------------------------------CONSTRAINTS
+ALTER TABLE bank_account
+    ADD CONSTRAINT account_user_fk
+        FOREIGN KEY (user_id)
+        REFERENCES bank_user (user_id)
+        ON DELETE CASCADE;
 
-create sequence user_id_sequence
-    minvalue 1
-    start with 1
-    increment by 1
-    cache 20;
+ALTER TABLE account_transaction
+    ADD CONSTRAINT transaction_acocunt_fk
+        FOREIGN KEY (account_id)
+        REFERENCES bank_account (account_id)
+        ON DELETE CASCADE;
+
+----------------------------------------------------------------SEQUENCES
+CREATE SEQUENCE user_id_sequence
+    MINVALUE 1
+    START WITH 1
+    INCREMENT BY 1
+    CACHE 20;
     
-create sequence account_id_sequence
-    minvalue 1
-    start with 1
-    increment by 1
-    cache 20;
-  
-create or replace procedure insert_user 
-    (new_name in varchar2, new_password in varchar2) as 
-begin
-    insert into bank_user values (user_id_sequence.nextval, new_name, new_password, null);
-    commit;
-end;
+CREATE SEQUENCE account_id_sequence
+    MINVALUE 1
+    START WITH 1
+    INCREMENT BY 1
+    CACHE 20;
+    
+CREATE SEQUENCE transaction_id_sequence
+     MINVALUE 1
+    START WITH 1
+    INCREMENT BY 1
+    CACHE 20;
+
+----------------------------------------------------------------TRIGGERS
+CREATE OR REPLACE TRIGGER insert_transaction
+BEFORE UPDATE ON bank_account
+FOR EACH ROW
+DECLARE
+    amount DECIMAL;
+    account_id NUMBER;
+BEGIN
+    amount := :NEW.account_balance - :OLD.account_balance;
+    account_id := :OLD.account_id;
+    INSERT INTO account_transaction
+        VALUES (transaction_id_sequence.NEXTVAL, CURRENT_TIMESTAMP, amount, account_id);
+END;
+/
+----------------------------------------------------------------STORED PROCEDURES
+CREATE OR REPLACE PROCEDURE insert_user
+    (new_name IN VARCHAR2, new_password IN VARCHAR2) AS
+BEGIN
+    INSERT INTO bank_user
+        VALUES (user_id_sequence.NEXTVAL, new_name, new_password);
+    COMMIT;
+END;
 /
 
-create or replace procedure insert_account 
-    (user_id in number) as 
-begin
-    insert into bank_account values (account_id_sequence.nextval, 0, user_id);
-    commit;
-end;
+CREATE OR REPLACE PROCEDURE delete_user
+    (input_name IN VARCHAR2) AS
+BEGIN
+    DELETE FROM bank_user WHERE input_name = user_name;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE delete_all_users AS
+BEGIN
+    DELETE FROM bank_user;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE update_username
+    (current_name VARCHAR2, new_name VARCHAR2) AS
+BEGIN
+    UPDATE bank_user
+        SET user_name = new_name
+        WHERE user_name = current_name;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE update_password
+    (input_name VARCHAR2, new_password VARCHAR2) AS
+BEGIN
+    UPDATE bank_user
+        SET user_password = new_password
+        WHERE user_name = input_name;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE insert_account
+    (input_id IN NUMBER, output_id OUT NUMBER) AS
+BEGIN
+    INSERT INTO bank_account
+        VALUES (account_id_sequence.NEXTVAL,0, input_id);
+    output_id := account_id_sequence.CURRVAL;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE delete_account
+    (input_id IN NUMBER) AS
+BEGIN
+    DELETE FROM bank_account WHERE input_id = account_id;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE deposit_balance
+    (input_id IN NUMBER, input_amount IN DECIMAL, output_id OUT NUMBER) AS
+BEGIN
+    UPDATE bank_account
+        SET account_balance = account_balance + input_amount
+        WHERE account_id = input_id;
+    output_id := transaction_id_sequence.CURRVAL;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE withdraw_balance
+    (input_id IN NUMBER, input_amount IN DECIMAL, output_id OUT NUMBER) AS
+BEGIN
+    UPDATE bank_account
+        SET account_balance = account_balance - input_amount
+        WHERE account_id = input_id;
+    output_id := transaction_id_sequence.CURRVAL;
+    COMMIT;
+END;
 /
 
 commit;
-
---DELETE BELOW LINE PRIOR TO FINALIZING
-
-call insert_user('LeChiffre', 'baccarat');

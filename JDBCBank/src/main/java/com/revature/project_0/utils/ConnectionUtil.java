@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnectionUtil {
@@ -27,13 +28,12 @@ public class ConnectionUtil {
             in = new FileInputStream("src\\main\\resources\\connection.properties");
             props.load(in);
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con = null;
             String endpoint = props.getProperty("jdbc.url");
             String username = props.getProperty("jdbc.username");
             String password = props.getProperty("jdbc.password");
-            con = DriverManager.getConnection(endpoint, username, password);
-            Log.info("Connection established to " + con.getSchema() + " schema");
-            return con;
+            connectionInstance = DriverManager.getConnection(endpoint, username, password);
+            Log.info("Connection established to " + connectionInstance.getSchema() + " schema");
+            return connectionInstance;
 			
 		}catch (Exception e) {
 			Log.error("Unable to connect to database");
@@ -47,6 +47,16 @@ public class ConnectionUtil {
 		return null;
 	}
 	
-	
+	public static Boolean tryToClose(Connection conn) {
+		if(conn != null) {
+			try {
+				conn.close();
+				return true;
+			}catch (SQLException e) {
+				Log.error("SQL Exception Occurred: ", e);
+			}
+		}
+		return false;
+	}
 }
 

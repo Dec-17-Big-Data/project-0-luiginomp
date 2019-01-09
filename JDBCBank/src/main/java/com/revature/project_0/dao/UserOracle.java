@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,97 +29,69 @@ public class UserOracle implements UserDAO{
 		}
 		return instance;
 	}
-
-	public Boolean createUser(String username, String password) {
-		Log.traceEntry("Create user with name " + username + ", password " + password);
-		if((Optional) getUser(username) != Optional.empty()) {
-			Log.traceExit("Username already exists. Failed to create user");
-			return false;
-		}
+	
+	public Boolean callInsertUser(String username, String password){
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
-			Log.traceExit("No connection to database found. Failed to create user");
+			Log.info("callInsertUser returning false - failed to establish connection");
 			return false;
 		}
-		Log.trace("Username is valid");
-		String sql = "{call insert_user (?, ?)}";
-		CallableStatement stmt = null;
+		String sql = "CALL insert_user (?, ?)";
 		try {
-			stmt = conn.prepareCall(sql);
+			CallableStatement stmt = conn.prepareCall(sql);
 			stmt.setString(1, username);
 			stmt.setString(2, password);
 			stmt.execute();
-			Log.trace("Call successful");
-			return true;
-		}catch (SQLException e) {
-			Log.error("SQL Exception occurred while attempting to prepare statement", e);
-		}catch (Exception e) {
-			Log.error("Exception Occurred: ", e);
-		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.info("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+		}catch(SQLException e) {
+			Log.error("callInsertUser returning false - encountered SQL Exception");
+			return false;
 		}
-		return false;
+		Log.info("callInsertUser returning true - successfully called stored function");
+		return true;
 	}
-
-	public Optional<User> getUser(String username) {
-		Log.traceEntry("Retrieving user named " + username);
+	
+	public Optional<User> sendUserQuery(String username){
 		Connection conn = ConnectionUtil.getConnection();
 		if(conn == null) {
-			Log.traceExit("No connection to database found. Failed to search for user");
-		}
-		User user = null;
-		String sql = "select * from bank_user where user_name = ?";
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-		stmt = conn.prepareStatement(sql);
-		stmt.setString(1, username);
-		rs = stmt.executeQuery();
-		if(rs.next() == true) {
-			user = new User(rs.getInt("user_id"), rs.getString("user_name"), rs.getString("user_password"));
-			Log.info("Username found on file");
-			return Optional.of(user);
-		}
-		if(user == null) {
-			Log.info("Username not found");
+			Log.info("sendUserQuery returning empty optional - failed to establish connection");
 			return Optional.empty();
 		}
+		String sql = "SELECT * FROM bank_user where user_name = ?";
+		User user = null;
+		try {
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, username);
+			ResultSet rs = stmt.executeQuery();
+			if(rs.next()) {
+				user = new User(
+						rs.getInt("user_id"),
+						rs.getString("user_name"),
+						rs.getString("user_password"));
+			}else {
+				Log.info("sendUserQuery returning empty optional - failed to retrieve user object with given username");
+				return Optional.empty();
+			}
 		}catch (SQLException e) {
-			Log.error("SQL Exception occurred while attempting to get result set", e);
-		}catch (Exception e) {
-			Log.error("Exception Occurred: ", e);
-		}finally {
-			try {
-				if(stmt != null) {
-					conn.close();
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
-			try {
-				if(conn != null) {
-					conn.close();
-					Log.traceExit("Closed connection to database");
-				}
-			}catch (SQLException e) {
-				Log.error("SQL Exception occurred while attempting to close connection", e);
-			}
+			Log.error("sendUserQuery returning empty optional - encountered SQL Exception");
+			return Optional.empty();
 		}
-		Log.traceExit("Username not found");
-		return Optional.empty();
+		Log.info("sendUserQuery found and returning optional of " + user.toString());
+		return Optional.of(user);
+	}
+	
+	public Boolean userExists(String username) {
+		Log.info("userExists called and passed " + username);
+		Log.info("userExists calling sendUserQuery and passing username to try and get user object");
+		User user = null;
+		try {
+			user = sendUserQuery(username).get();
+		}catch(NoSuchElementException e) {
+		}
+		if(user == null) {
+			Log.info("userExists returning false - user was null");
+			return false;
+		}
+		Log.info("userExists returning true - successfully retrieved user object");
+		return true;
 	}
 }
