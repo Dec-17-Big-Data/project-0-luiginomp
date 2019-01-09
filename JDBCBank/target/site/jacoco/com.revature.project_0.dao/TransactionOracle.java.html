@@ -61,15 +61,15 @@ public class TransactionOracle implements TransactionDAO {
 	}
 	
 	public Optional&lt;Transaction&gt; sendTransactionQuery(Integer transactionId){
-<span class="nc" id="L64">		Log.traceEntry(&quot;Oracle sending query for transaction ID &quot; + transactionId);</span>
-<span class="nc" id="L65">		Connection conn = ConnectionUtil.getConnection();</span>
-<span class="nc" id="L66">		String sql = &quot;SELECT * FROM account_transaction where transaction_id = ?&quot;;</span>
-<span class="nc" id="L67">		Transaction transaction = null;</span>
+<span class="fc" id="L64">		Log.traceEntry(&quot;Oracle sending query for transaction ID &quot; + transactionId);</span>
+<span class="fc" id="L65">		Connection conn = ConnectionUtil.getConnection();</span>
+<span class="fc" id="L66">		String sql = &quot;SELECT * FROM account_transaction where transaction_id = ?&quot;;</span>
+<span class="fc" id="L67">		Transaction transaction = null;</span>
 		try {
-<span class="nc" id="L69">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
-<span class="nc" id="L70">			stmt.setInt(1, transactionId);</span>
-<span class="nc" id="L71">			ResultSet rs = stmt.executeQuery();</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">			if(rs.next()) {</span>
+<span class="fc" id="L69">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+<span class="fc" id="L70">			stmt.setInt(1, transactionId);</span>
+<span class="fc" id="L71">			ResultSet rs = stmt.executeQuery();</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			if(rs.next()) {</span>
 <span class="nc" id="L73">				transaction = new Transaction(</span>
 <span class="nc" id="L74">						rs.getInt(&quot;transaction_id&quot;),</span>
 <span class="nc" id="L75">						rs.getTimestamp(&quot;transaction_timestamp&quot;).toString(),</span>
@@ -77,8 +77,8 @@ public class TransactionOracle implements TransactionDAO {
 <span class="nc" id="L77">				Log.traceExit(&quot;Oracle found &quot; + transaction.toString());</span>
 <span class="nc" id="L78">				return Optional.of(transaction);</span>
 			}else {
-<span class="nc" id="L80">				Log.traceExit(&quot;Oracle couldn't find any existing transactions with ID &quot; + transactionId);</span>
-<span class="nc" id="L81">				return Optional.empty();</span>
+<span class="fc" id="L80">				Log.traceExit(&quot;Oracle couldn't find any existing transactions with ID &quot; + transactionId);</span>
+<span class="fc" id="L81">				return Optional.empty();</span>
 			}
 <span class="nc" id="L83">		}catch (SQLException e) {</span>
 <span class="nc" id="L84">			Log.error(&quot;SQL Exception occurred: &quot;, e);</span>

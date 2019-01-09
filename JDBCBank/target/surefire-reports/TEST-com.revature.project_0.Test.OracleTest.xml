@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="16" failures="1" name="com.revature.project_0.Test.OracleTest" time="8.051" errors="0" skipped="0">
+<testsuite tests="16" failures="1" name="com.revature.project_0.Test.OracleTest" time="10.741" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_191\jre\bin"/>
@@ -63,15 +63,15 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendUserQueryWithValidName" time="3.84"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertAccountOnExistingUser" time="0.105"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="userExistsWithValidName" time="0.033"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callUpdateUsernameOnExistingUser" time="0.369"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendUserQueryWithInvalidName" time="0.307"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="userExistsWithInvalidName" time="0.323"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendAccountQueryForExistingAccount" time="0.188"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertUserWithValidName" time="0.204"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callDepositBalanceOnExistingAccount" time="0.417">
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendUserQueryWithValidName" time="5.336"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertAccountOnExistingUser" time="0.59"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="userExistsWithValidName" time="0.604"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callUpdateUsernameOnExistingUser" time="0.223"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendUserQueryWithInvalidName" time="0.409"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="userExistsWithInvalidName" time="0.205"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendAccountQueryForExistingAccount" time="0.306"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertUserWithValidName" time="0.406"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callDepositBalanceOnExistingAccount" time="0.452">
     <failure message="expected:&lt;Optional[7]&gt; but was:&lt;Optional[6]&gt;" type="java.lang.AssertionError">java.lang.AssertionError: expected:&lt;Optional[7]&gt; but was:&lt;Optional[6]&gt;
 	at org.junit.Assert.fail(Assert.java:88)
 	at org.junit.Assert.failNotEquals(Assert.java:834)
@@ -111,11 +111,11 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 </failure>
   </testcase>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callUpdatePasswordOnExistingUser" time="0.129"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callDeleteAccountOnExistingAccount" time="0.069"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendAccountOwnerQueryForNonexistentUser" time="0.305"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callDeleteUserOnExistingUser" time="0.205"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendAccountOwnerQueryForExistingUser" time="0.417"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertAccountOnNonexistentUser" time="1.011"/>
-  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertUserWithTakenName" time="0.129"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callUpdatePasswordOnExistingUser" time="0.163"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callDeleteAccountOnExistingAccount" time="0.699"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendAccountOwnerQueryForNonexistentUser" time="0.093"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callDeleteUserOnExistingUser" time="0.04"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="sendAccountOwnerQueryForExistingUser" time="0.307"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertAccountOnNonexistentUser" time="0.421"/>
+  <testcase classname="com.revature.project_0.Test.OracleTest" name="callInsertUserWithTakenName" time="0.487"/>
 </testsuite>

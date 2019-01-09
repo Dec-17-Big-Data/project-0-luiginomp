@@ -10,6 +10,8 @@ EXEC insert_user ('Updatable', 'irrelevant');
 EXEC insert_user ('LockedOut', 'Updatable');
 EXEC insert_user ('Updatable2', 'irrelevant');
 EXEC insert_user ('Deletable2', 'irrelevant');
+EXEC insert_user ('Deletable3', 'irrelevant');
+EXEC insert_user ('Updatable3', 'irrelevant');
 
 EXEC insert_account (1, :placeholder);
 EXEC insert_account (1, :placeholder);

@@ -122,18 +122,18 @@ public class AccountService {
 	
 	//A user can add to an account.
 	public Transaction makeDeposit(Integer accountId, Double amount, Integer userId) {
-<span class="nc" id="L125">		Log.info(&quot;makeDeposit called and passed account ID &quot; + accountId + &quot;, amount &quot; + amount + &quot;, and user ID &quot; + userId);</span>
-<span class="nc" id="L126">		Log.info(&quot;makeDeposit checking if amount is valid&quot;);</span>
-<span class="nc bnc" id="L127" title="All 2 branches missed.">		if(amount &lt;= 0) {</span>
-<span class="nc" id="L128">			Log.info(&quot;makeDepsit returning null - amount was 0 or less&quot;);</span>
-<span class="nc" id="L129">			System.out.println(&quot;You can't make deposits of 0 or less&quot;);</span>
-<span class="nc" id="L130">			return null;</span>
+<span class="fc" id="L125">		Log.info(&quot;makeDeposit called and passed account ID &quot; + accountId + &quot;, amount &quot; + amount + &quot;, and user ID &quot; + userId);</span>
+<span class="fc" id="L126">		Log.info(&quot;makeDeposit checking if amount is valid&quot;);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		if(amount &lt;= 0) {</span>
+<span class="fc" id="L128">			Log.info(&quot;makeDepsit returning null - amount was 0 or less&quot;);</span>
+<span class="fc" id="L129">			System.out.println(&quot;You can't make deposits of 0 or less&quot;);</span>
+<span class="fc" id="L130">			return null;</span>
 		}
-<span class="nc" id="L132">		Log.info(&quot;makeDeposit calling retrieveAccount and passing account ID to see if account exists&quot;);</span>
-<span class="nc bnc" id="L133" title="All 2 branches missed.">		if(retrieveAccount(accountId) == null) {</span>
-<span class="nc" id="L134">			Log.info(&quot;makeDeposit returning null - unable to retrieve account&quot;);</span>
-<span class="nc" id="L135">			System.out.println(&quot;Failed to retrieve account. Please try again&quot;);</span>
-<span class="nc" id="L136">			return null;</span>
+<span class="fc" id="L132">		Log.info(&quot;makeDeposit calling retrieveAccount and passing account ID to see if account exists&quot;);</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">		if(retrieveAccount(accountId) == null) {</span>
+<span class="fc" id="L134">			Log.info(&quot;makeDeposit returning null - unable to retrieve account&quot;);</span>
+<span class="fc" id="L135">			System.out.println(&quot;Failed to retrieve account. Please try again&quot;);</span>
+<span class="fc" id="L136">			return null;</span>
 		}
 		try {
 <span class="nc" id="L139">			Log.info(&quot;makeDeposit calling sendAccountOwnerQuery and passing account ID to try and check if user ID matches&quot;);</span>
@@ -170,19 +170,19 @@ public class AccountService {
 	
 	//A user can withdraw from an account.
 	public Transaction makeWithdrawal(Integer accountId, Double amount, Integer userId) {
-<span class="nc" id="L173">		Log.info(&quot;makeWithdrawal called and passed account ID &quot; + accountId + &quot;, amount &quot; + amount + &quot;, and user ID &quot; + userId);</span>
-<span class="nc" id="L174">		Log.info(&quot;makeWithdrawal checking if amount is valid&quot;);</span>
-<span class="nc bnc" id="L175" title="All 2 branches missed.">		if(amount &lt;= 0) {</span>
-<span class="nc" id="L176">			Log.info(&quot;makeWithdrawal returning null - amount was 0 or less&quot;);</span>
-<span class="nc" id="L177">			System.out.println(&quot;You can't make deposits of 0 or less&quot;);</span>
-<span class="nc" id="L178">			return null;</span>
+<span class="fc" id="L173">		Log.info(&quot;makeWithdrawal called and passed account ID &quot; + accountId + &quot;, amount &quot; + amount + &quot;, and user ID &quot; + userId);</span>
+<span class="fc" id="L174">		Log.info(&quot;makeWithdrawal checking if amount is valid&quot;);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if(amount &lt;= 0) {</span>
+<span class="fc" id="L176">			Log.info(&quot;makeWithdrawal returning null - amount was 0 or less&quot;);</span>
+<span class="fc" id="L177">			System.out.println(&quot;You can't make deposits of 0 or less&quot;);</span>
+<span class="fc" id="L178">			return null;</span>
 		}
-<span class="nc" id="L180">		Log.info(&quot;makeWithdrawal calling retrieveAccount and passing account ID to retrieve acocunt object&quot;);</span>
-<span class="nc" id="L181">		Account account = retrieveAccount(accountId);</span>
-<span class="nc bnc" id="L182" title="All 2 branches missed.">		if(account == null) {</span>
-<span class="nc" id="L183">			Log.info(&quot;makeWithdrawal returning null - failed to retrieveAccount&quot;);</span>
-<span class="nc" id="L184">			System.out.println(&quot;Failed to retrieve account. Please try again&quot;);</span>
-<span class="nc" id="L185">			return null;</span>
+<span class="fc" id="L180">		Log.info(&quot;makeWithdrawal calling retrieveAccount and passing account ID to retrieve acocunt object&quot;);</span>
+<span class="fc" id="L181">		Account account = retrieveAccount(accountId);</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">		if(account == null) {</span>
+<span class="fc" id="L183">			Log.info(&quot;makeWithdrawal returning null - failed to retrieveAccount&quot;);</span>
+<span class="fc" id="L184">			System.out.println(&quot;Failed to retrieve account. Please try again&quot;);</span>
+<span class="fc" id="L185">			return null;</span>
 		}
 <span class="nc" id="L187">		Log.info(&quot;makeWithdrawal checking if funds are available&quot;);</span>
 <span class="nc bnc" id="L188" title="All 2 branches missed.">		if(amount &gt; account.getBalance()) {</span>

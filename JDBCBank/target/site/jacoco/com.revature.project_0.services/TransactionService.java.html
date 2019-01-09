@@ -27,12 +27,12 @@ public class TransactionService {
 	}
 	
 	public Transaction retrieveTransaction(Integer transactionId) {
-<span class="nc" id="L30">		Log.traceEntry(&quot;Service retrieving transaction for ID &quot; + transactionId);</span>
-<span class="nc" id="L31">		Transaction transaction = null;</span>
+<span class="fc" id="L30">		Log.traceEntry(&quot;Service retrieving transaction for ID &quot; + transactionId);</span>
+<span class="fc" id="L31">		Transaction transaction = null;</span>
 		try {
 <span class="nc" id="L33">			transaction = transactionOracle.sendTransactionQuery(transactionId).get();</span>
-<span class="nc" id="L34">		}catch(NoSuchElementException e) {</span>
-<span class="nc" id="L35">			return null;</span>
+<span class="pc" id="L34">		}catch(NoSuchElementException e) {</span>
+<span class="fc" id="L35">			return null;</span>
 		}
 <span class="nc" id="L37">		return transaction;</span>
 	}

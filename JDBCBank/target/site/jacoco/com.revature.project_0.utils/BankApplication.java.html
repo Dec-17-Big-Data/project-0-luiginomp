@@ -12,16 +12,16 @@ import com.revature.project_0.models.User;
 import com.revature.project_0.services.*;
 
 <span class="nc" id="L14">public class BankApplication {</span>
-<span class="nc" id="L15">	private static Boolean loggedIn = false;</span>
-<span class="nc" id="L16">	private static Boolean isAdmin = false;</span>
-<span class="nc" id="L17">	private static Logger Log = LogManager.getLogger(BankApplication.class);</span>
-<span class="nc" id="L18">	private static User currentUser = null;</span>
-	private static UserService userService;
-	private static AdminService adminService;
-	private static AccountService accountService;
-<span class="nc" id="L22">	private static enum States {Welcome, LogIn, Register, User, DeleteAccount, Deposit, Withdraw, Admin, UpdateUsername, DeleteUser, Terminated};</span>
-<span class="nc" id="L23">	private static States curState = States.Welcome;</span>
-<span class="nc" id="L24">	private static Boolean switchPrompt = true;</span>
+<span class="nc" id="L15">	public static Boolean loggedIn = false;</span>
+<span class="nc" id="L16">	public static Boolean isAdmin = false;</span>
+<span class="nc" id="L17">	public static Logger Log = LogManager.getLogger(BankApplication.class);</span>
+<span class="nc" id="L18">	public static User currentUser = null;</span>
+	public static UserService userService;
+	public static AdminService adminService;
+	public static AccountService accountService;
+<span class="nc" id="L22">	public static enum States {Welcome, LogIn, Register, User, DeleteAccount, Deposit, Withdraw, Admin, UpdateUsername, DeleteUser, Terminated};</span>
+<span class="nc" id="L23">	public static States curState = States.Welcome;</span>
+<span class="nc" id="L24">	public static Boolean switchPrompt = true;</span>
 	
 	public static void main (String[] args) {
 <span class="nc" id="L27">		Log.info(&quot;APPLICATION STARTED&quot;);</span>
@@ -125,7 +125,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L125">		Log.info(&quot;APPLICATION TERMINATED&quot;);</span>
 <span class="nc" id="L126">	}</span>
 	
-	private static void switchPrompts() {
+	public static void switchPrompts() {
 <span class="nc bnc" id="L129" title="All 11 branches missed.">		switch(curState) {</span>
 		default:
 <span class="nc" id="L131">			System.out.println(&quot;Something happened, please refresh application&quot;);</span>
@@ -204,17 +204,17 @@ import com.revature.project_0.services.*;
 		}
 <span class="nc" id="L205">	}</span>
 	
-	private static void changeStateTo(States newState) {
+	public static void changeStateTo(States newState) {
 <span class="nc" id="L208">		curState = newState;</span>
 <span class="nc" id="L209">		System.out.println(&quot;\n===========================================================\n&quot;);</span>
 <span class="nc" id="L210">		switchPrompt = true;</span>
 <span class="nc" id="L211">	}</span>
 	
-	private static void promptInput() {
+	public static void promptInput() {
 <span class="nc" id="L214">		System.out.print(&quot;\nInput: &quot;);</span>
 <span class="nc" id="L215">	}</span>
 	
-	private static void welcomeActions(String input) {
+	public static void welcomeActions(String input) {
 <span class="nc bnc" id="L218" title="All 7 branches missed.">		switch(input) {</span>
 		default:
 <span class="nc" id="L220">			System.out.println(&quot;Unknown command. Enter one of the given options&quot;);</span>
@@ -229,7 +229,7 @@ import com.revature.project_0.services.*;
 		}
 <span class="nc" id="L230">	}</span>
 	
-	private static Boolean logInActions(String input) {
+	public static Boolean logInActions(String input) {
 <span class="nc" id="L233">		String[] strings = input.split(&quot;\\s+&quot;);</span>
 <span class="nc bnc" id="L234" title="All 2 branches missed.">		if(strings.length != 2) {</span>
 <span class="nc" id="L235">			Log.info(&quot;checkLogInInput returning false - input should be two words. Actual amount is &quot; + strings.length);</span>
@@ -248,7 +248,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L248">		return true;</span>
 	}
 	
-	private static Boolean userActions(String input) {
+	public static Boolean userActions(String input) {
 <span class="nc bnc" id="L252" title="All 19 branches missed.">		switch(input) {</span>
 		default:
 <span class="nc" id="L254">			System.out.println(&quot;Unknown command&quot;);</span>
@@ -278,7 +278,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L278">		return true;</span>
 	}
 	
-	private static Boolean registerActions(String input) {
+	public static Boolean registerActions(String input) {
 <span class="nc" id="L282">		String[] strings = input.split(&quot;\\s+&quot;);</span>
 <span class="nc bnc" id="L283" title="All 2 branches missed.">		if(strings.length != 2) {</span>
 <span class="nc" id="L284">			System.out.println(&quot;Input not recognized. Should be username and password with space in between&quot;);</span>
@@ -295,7 +295,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L295">		return true;</span>
 	}
 	
-	private static Boolean deleteAccountActions(String input) {
+	public static Boolean deleteAccountActions(String input) {
 <span class="nc" id="L299">		Integer accountId = null;</span>
 		try {
 <span class="nc" id="L301">			accountId = (Integer)Integer.parseInt(input);</span>
@@ -312,7 +312,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L312">		return true;</span>
 	}
 	
-	private static void depositActions(String input) {
+	public static void depositActions(String input) {
 <span class="nc" id="L316">		String[] strings = input.split(&quot;\\s+&quot;);</span>
 <span class="nc bnc" id="L317" title="All 2 branches missed.">		if(strings.length != 2) {</span>
 <span class="nc" id="L318">			System.out.println(&quot;Input format is incorrect&quot;);</span>
@@ -337,7 +337,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L337">		return;</span>
 	}
 	
-	private static void withdrawActions(String input) {
+	public static void withdrawActions(String input) {
 <span class="nc" id="L341">		String[] strings = input.split(&quot;\\s+&quot;);</span>
 <span class="nc bnc" id="L342" title="All 2 branches missed.">		if(strings.length != 2) {</span>
 <span class="nc" id="L343">			System.out.println(&quot;Input format is incorrect&quot;);</span>
@@ -362,7 +362,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L362">		return;</span>
 	}
 	
-	private static void adminActions(String input) {
+	public static void adminActions(String input) {
 <span class="nc bnc" id="L366" title="All 16 branches missed.">		switch(input) {</span>
 		default: 
 <span class="nc" id="L368">			System.out.println(&quot;Unknown command&quot;);</span>
@@ -386,7 +386,7 @@ import com.revature.project_0.services.*;
 		}
 <span class="nc" id="L387">	}</span>
 	
-	private static void updateUsernameActions(String input) {
+	public static void updateUsernameActions(String input) {
 <span class="nc" id="L390">		String[] strings = input.split(&quot;\\s+&quot;);</span>
 <span class="nc bnc" id="L391" title="All 2 branches missed.">		if(strings.length != 2) {</span>
 <span class="nc" id="L392">			System.out.println(&quot;Input not recognized. Should be username and password with space in between&quot;);</span>
@@ -403,13 +403,13 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L403">		return;</span>
 	}
 	
-	private static void deleteUserActions(String input) {
+	public static void deleteUserActions(String input) {
 <span class="nc" id="L407">		adminDeleteUser(input);</span>
 <span class="nc" id="L408">		promptInput();</span>
 <span class="nc" id="L409">	}</span>
 	
 	//A registered user can login with their username and password  
-	private static Boolean logIn(String username, String password) {
+	public static Boolean logIn(String username, String password) {
 <span class="nc" id="L413">		Log.info(&quot;logIn called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
 <span class="nc bnc" id="L414" title="All 2 branches missed.">		if(loggedIn == true) {</span>
 <span class="nc" id="L415">			Log.info(&quot;logIn returned false - already logged in&quot; + System.lineSeparator());</span>
@@ -443,7 +443,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L443">		return false;</span>
 	}
 	
-	private static Boolean logOut() {
+	public static Boolean logOut() {
 <span class="nc" id="L447">		Log.info(&quot;logOut called&quot;);</span>
 <span class="nc bnc" id="L448" title="All 2 branches missed.">		if(loggedIn == false) {</span>
 <span class="nc" id="L449">			Log.info(&quot;logOut returned false - already logged off&quot; + System.lineSeparator());</span>
@@ -463,7 +463,7 @@ import com.revature.project_0.services.*;
 	
 	//An unregistered user can register by creating a username and password.
 	//A superuser can create users.
-	private static Boolean createNewUser(String username, String password) {
+	public static Boolean createNewUser(String username, String password) {
 <span class="nc" id="L467">		Log.info(&quot;register called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
 <span class="nc" id="L468">		Log.info(&quot;register checking if currently logged in as user or admin&quot;);</span>
 <span class="nc bnc" id="L469" title="All 4 branches missed.">		if(loggedIn == true &amp;&amp; isAdmin == false) {</span>
@@ -482,7 +482,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L482">		return true;</span>
 	}
 	
-	private static Boolean userCreateAccount() {
+	public static Boolean userCreateAccount() {
 <span class="nc" id="L486">		Log.info(&quot;userCreateAccount called&quot;);</span>
 <span class="nc" id="L487">		Log.info(&quot;userCreateAccount checking if user is logged in&quot;);</span>
 <span class="nc bnc" id="L488" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
@@ -504,7 +504,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L504">		return true;</span>
 	}
 	
-	private static Boolean userViewAccounts() {
+	public static Boolean userViewAccounts() {
 <span class="nc" id="L508">		Log.info(&quot;userViewAccounts called&quot;);</span>
 <span class="nc" id="L509">		Log.info(&quot;userViewAccounts checking if user is logged in&quot;);</span>
 <span class="nc bnc" id="L510" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
@@ -534,7 +534,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L534">		return true;</span>
 	}
 	
-	private static Boolean userDeleteAccount(Integer accountId) {
+	public static Boolean userDeleteAccount(Integer accountId) {
 <span class="nc" id="L538">		Log.info(&quot;userDeleteAccount called and passed account ID &quot; + accountId);</span>
 <span class="nc" id="L539">		Log.info(&quot;userDeleteAccount checking if user is logged in&quot;);</span>
 <span class="nc bnc" id="L540" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
@@ -552,7 +552,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L552">		return true;</span>
 	}
 	
-	private static Boolean userDepositToAccount(Integer accountId, Double amount) {
+	public static Boolean userDepositToAccount(Integer accountId, Double amount) {
 <span class="nc" id="L556">		Log.info(&quot;userDepositToAccount called and passed account ID &quot; + accountId + &quot; and amount&quot; + amount);</span>
 <span class="nc" id="L557">		Log.info(&quot;userDepositToAccount checking if user is logged in&quot;);</span>
 <span class="nc bnc" id="L558" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
@@ -571,7 +571,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L571">		return true;</span>
 	}
 	
-	private static Boolean userWithdrawFromAccount(Integer accountId, Double amount) {
+	public static Boolean userWithdrawFromAccount(Integer accountId, Double amount) {
 <span class="nc" id="L575">		Log.info(&quot;userWithDrawFromAccount called and passed account ID &quot; + accountId + &quot; and amount&quot; + amount);</span>
 <span class="nc" id="L576">		Log.info(&quot;userWithDrawFromAccount checking if user is logged in&quot;);</span>
 <span class="nc bnc" id="L577" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
@@ -589,7 +589,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L589">		return true;</span>
 	}
 	
-	private static Boolean adminViewUser(String username) {
+	public static Boolean adminViewUser(String username) {
 <span class="nc" id="L593">		Log.info(&quot;adminViewUser called and passed username &quot;);</span>
 <span class="nc" id="L594">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
 <span class="nc bnc" id="L595" title="All 2 branches missed.">		if(isAdmin == false) {</span>
@@ -604,7 +604,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L604">		return result;</span>
 	}
 	
-	private static Boolean adminViewAllUsers() {
+	public static Boolean adminViewAllUsers() {
 <span class="nc" id="L608">		Log.info(&quot;adminViewUsers called&quot;);</span>
 <span class="nc" id="L609">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
 <span class="nc bnc" id="L610" title="All 2 branches missed.">		if(isAdmin == false) {</span>
@@ -631,7 +631,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L631">		return true;</span>
 	}
 	
-	private static Boolean adminUpdateUsername(String username, String newName) {
+	public static Boolean adminUpdateUsername(String username, String newName) {
 <span class="nc" id="L635">		Log.info(&quot;adminUpdateUsername called and passed &quot; + username + &quot; and &quot; + newName);</span>
 <span class="nc" id="L636">		Log.info(&quot;adminUpdateUsername checking if logged in as admin&quot;);</span>
 <span class="nc bnc" id="L637" title="All 2 branches missed.">		if(isAdmin == false) {</span>
@@ -649,7 +649,7 @@ import com.revature.project_0.services.*;
 <span class="nc" id="L649">		return true;</span>
 	}
 	
-	private static Boolean adminDeleteUser(String username) {
+	public static Boolean adminDeleteUser(String username) {
 <span class="nc" id="L653">		Log.info(&quot;adminDeleteUser called and passed username &quot; + username);</span>
 <span class="nc" id="L654">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
 <span class="nc bnc" id="L655" title="All 2 branches missed.">		if(isAdmin == false) {</span>
