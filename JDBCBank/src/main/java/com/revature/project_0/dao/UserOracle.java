@@ -45,8 +45,6 @@ public class UserOracle implements UserDAO{
 		}catch(SQLException e) {
 			Log.error("callInsertUser returning false - encountered SQL Exception");
 			return false;
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callInsertUser returning true - successfully called stored function");
 		return true;
@@ -76,8 +74,6 @@ public class UserOracle implements UserDAO{
 		}catch (SQLException e) {
 			Log.error("sendUserQuery returning empty optional - encountered SQL Exception");
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("sendUserQuery found and returning optional of " + user.toString());
 		return Optional.of(user);

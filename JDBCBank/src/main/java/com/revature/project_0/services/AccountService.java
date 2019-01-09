@@ -207,7 +207,7 @@ public class AccountService {
 			return null;
 		}
 		Log.info("makeWithdrawal returning transaction - withdrawal successful");
-		System.out.println("Withdrawal successful - " + transaction.toString());
+		System.out.println("Withdrawal successful");
 		return transaction;
 	}
 }

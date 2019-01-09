@@ -53,8 +53,6 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}catch (SQLException e) {
 			Log.error("sendUsersQuery returned optional empty - encountered SQL Exception: ", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		if(userList.isEmpty()) {
 			Log.info("sendUsersQuery returned optional empty - no users found");
@@ -83,8 +81,6 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}catch(SQLException e) {
 			Log.info("callDeleteUser returning false - encountered SQL Exception: ", e);
 			return false;
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callDeleteUser returned true - successfully called stored procedure");
 		return true;
@@ -106,8 +102,6 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 			Log.error("deleteAllUsers SQL Exception Ocurred:", e);
 		}catch (Exception e) {
 			Log.error("Exception Occurred: ", e);
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.traceExit("Failed to call delete_all_users");
 		return false;
@@ -134,8 +128,6 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 		}catch (SQLException e) {
 			Log.error("callUpdateUsername returned false - encountered SQL Exception: ", e);
 			return false;
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callUpdateUsername returned true - successfully called stored function");
 		return true;
@@ -157,8 +149,6 @@ public class AdminOracle extends UserOracle implements AdminDAO {
 			return true;
 		}catch (SQLException e) {
 			Log.error("callUpdatePassword SQL Exception occurred: ", e);
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.traceExit("Failed to call update_password");
 		return false;

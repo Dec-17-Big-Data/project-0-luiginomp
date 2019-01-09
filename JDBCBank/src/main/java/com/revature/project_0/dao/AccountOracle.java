@@ -54,8 +54,6 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.error("callInsertAccount returned empty optional - encountered SQL Exception: ", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callInsertAccount returned optional of account ID " + newAccountId);
 		return Optional.of(newAccountId);
@@ -90,8 +88,6 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.info("sendAccountQuery returning empty optional - encountered SQL Exception:", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("sendAccountQuery returning optional of account");
 		return Optional.of(account);
@@ -125,8 +121,6 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.error("sendAccountsQuery returned empty optional - encountered SQL Exception: ", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		if(accountList.isEmpty()) {
 			Log.info("sendAccountsQuery returned empty optional - no accounts found");
@@ -155,8 +149,6 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.error("callDeleteAccount returning false - encountered SQL Exception:", e);
 			return false;
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callDeleteAccount returning true - successfully called stored procedure");
 		return true;
@@ -188,8 +180,6 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.error("callDepositBalance returning empty optional - encountered SQL Exception:", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callDepositBalance returning optional of transaction ID - successfully called stored procedure");
 		return Optional.of(transactionId);
@@ -221,8 +211,6 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.error("callWithdrawBalance returning empty optional - encountered SQL Exception:", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.info("callWithdrawBalance returning optional of transaction ID");
 		return Optional.of(transactionId);
@@ -253,11 +241,10 @@ public class AccountOracle implements AccountDAO {
 		}catch (SQLException e) {
 			Log.error("sendAccountOwnerQuery returning empty optional - encountered SQL Exception: ", e);
 			return Optional.empty();
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		if(userId == null) {
 			Log.info("sendAccountOwnerQuery returning empty optional - user ID was null");
+			return Optional.empty();
 		}
 		Log.info("sendAccountOwnerQuery returning optional of user ID");
 		return Optional.of(userId);

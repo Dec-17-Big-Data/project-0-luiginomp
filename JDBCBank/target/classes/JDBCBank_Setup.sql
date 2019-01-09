@@ -1,11 +1,3 @@
-drop trigger insert_transaction;
-drop table account_transaction;
-drop table bank_account;
-drop table bank_user;
-drop sequence user_id_sequence;
-drop sequence account_id_sequence;
-drop sequence transaction_id_sequence;
-
 ----------------------------------------------------------------TABLES
 CREATE TABLE bank_user (
     user_id NUMBER(10) PRIMARY KEY,
@@ -15,14 +7,14 @@ CREATE TABLE bank_user (
 
 CREATE TABLE bank_account (
     account_id NUMBER(10) PRIMARY KEY,
-    account_balance DECIMAL(10, 5) DEFAULT '0',
+    account_balance DECIMAL(10, 2) DEFAULT '0',
     user_id NUMBER(10) NOT NULL
 );
 
 CREATE TABLE account_transaction (
     transaction_id NUMBER(10) PRIMARY KEY,
     transaction_timestamp TIMESTAMP NOT NULL,
-    transaction_amount DECIMAL(10, 5) Default '0',
+    transaction_amount DECIMAL(10, 2) Default '0',
     account_id NUMBER(10) NOT NULL
 );
 
@@ -158,10 +150,3 @@ END;
 /
 
 commit;
-
-CALL insert_user ('SeanConnery', 'DrNo');
-CALL insert_user ('DavidNiven', 'CasinoRoyale');
-CALL insert_user ('RogerMoore', 'GoldenGun');
-CALL insert_user ('TimothyDalton', 'LivingDaylights');
-CALL insert_user ('PierceBrosnan', 'GoldenEye');
-CALL insert_user ('DanielCraig', 'SkyFall');

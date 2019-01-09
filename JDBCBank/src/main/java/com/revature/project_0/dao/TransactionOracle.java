@@ -55,8 +55,6 @@ public class TransactionOracle implements TransactionDAO {
 			return Optional.of(transactionList);
 		}catch (SQLException e) {
 			Log.error("SQL Exception Occurred: ", e);
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.traceExit("Failed to send request");
 		return Optional.empty();
@@ -84,8 +82,6 @@ public class TransactionOracle implements TransactionDAO {
 			}
 		}catch (SQLException e) {
 			Log.error("SQL Exception occurred: ", e);
-		}finally {
-			ConnectionUtil.tryToClose(conn);
 		}
 		Log.traceExit("Oracle failed to send query");
 		return Optional.empty();

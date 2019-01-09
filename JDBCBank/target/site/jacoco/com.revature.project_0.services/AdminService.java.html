@@ -21,40 +21,40 @@ import com.revature.project_0.models.User;
 
 public class AdminService {
 	
-<span class="nc" id="L24">	private static Logger Log = LogManager.getLogger(AdminService.class);</span>
+<span class="fc" id="L24">	private static Logger Log = LogManager.getLogger(AdminService.class);</span>
 	private static AdminDAO adminOracle;
 	private static AdminService instance;
 	private static AccountService accountService;
-<span class="nc" id="L28">	private static User viewedUser = null;</span>
+<span class="fc" id="L28">	private static User viewedUser = null;</span>
 	
-<span class="nc" id="L30">	private AdminService() {</span>
-<span class="nc" id="L31">	}</span>
+<span class="fc" id="L30">	private AdminService() {</span>
+<span class="fc" id="L31">	}</span>
 	
 	public static AdminService getService() {
-<span class="nc" id="L34">		adminOracle = AdminOracle.getDAO();</span>
-<span class="nc" id="L35">		accountService = AccountService.getService();</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">		if(instance == null) {</span>
-<span class="nc" id="L37">			instance = new AdminService();</span>
+<span class="fc" id="L34">		adminOracle = AdminOracle.getDAO();</span>
+<span class="fc" id="L35">		accountService = AccountService.getService();</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if(instance == null) {</span>
+<span class="fc" id="L37">			instance = new AdminService();</span>
 		}
-<span class="nc" id="L39">		return instance;</span>
+<span class="fc" id="L39">		return instance;</span>
 	}
 	
 	public Boolean adminLogIn(String username, String password) {
-<span class="nc" id="L43">		Log.info(&quot;adminLogIn called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
-<span class="nc" id="L44">		InputStream in = null;</span>
-<span class="nc" id="L45">		Properties props = new Properties();</span>
-<span class="nc" id="L46">		String adminUsername = null;</span>
-<span class="nc" id="L47">		String adminPassword = null;</span>
+<span class="fc" id="L43">		Log.info(&quot;adminLogIn called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
+<span class="fc" id="L44">		InputStream in = null;</span>
+<span class="fc" id="L45">		Properties props = new Properties();</span>
+<span class="fc" id="L46">		String adminUsername = null;</span>
+<span class="fc" id="L47">		String adminPassword = null;</span>
 		try {
-<span class="nc" id="L49">			Log.info(&quot;adminLogIn assigning input stream&quot;);</span>
-<span class="nc" id="L50">            in = new FileInputStream(&quot;src\\main\\resources\\Admin.properties&quot;);</span>
-<span class="nc" id="L51">            Log.info(&quot;adminLogIn loading properties&quot;);</span>
-<span class="nc" id="L52">            props.load(in);</span>
-<span class="nc" id="L53">            Log.info(&quot;adminLogIn retrieving adminUsername&quot;);</span>
-<span class="nc" id="L54">            adminUsername = props.getProperty(&quot;admin.username&quot;);</span>
-<span class="nc" id="L55">            Log.info(&quot;adminLogIn retrieving adminPassword&quot;);</span>
-<span class="nc" id="L56">            adminPassword = props.getProperty(&quot;admin.password&quot;);	</span>
-<span class="nc" id="L57">		}catch (FileNotFoundException e) {</span>
+<span class="fc" id="L49">			Log.info(&quot;adminLogIn assigning input stream&quot;);</span>
+<span class="fc" id="L50">            in = new FileInputStream(&quot;src\\main\\resources\\Admin.properties&quot;);</span>
+<span class="fc" id="L51">            Log.info(&quot;adminLogIn loading properties&quot;);</span>
+<span class="fc" id="L52">            props.load(in);</span>
+<span class="fc" id="L53">            Log.info(&quot;adminLogIn retrieving adminUsername&quot;);</span>
+<span class="fc" id="L54">            adminUsername = props.getProperty(&quot;admin.username&quot;);</span>
+<span class="fc" id="L55">            Log.info(&quot;adminLogIn retrieving adminPassword&quot;);</span>
+<span class="fc" id="L56">            adminPassword = props.getProperty(&quot;admin.password&quot;);	</span>
+<span class="pc" id="L57">		}catch (FileNotFoundException e) {</span>
 <span class="nc" id="L58">			Log.error(&quot;adminLogIn failed locate specified file&quot;);</span>
 <span class="nc" id="L59">			return false;</span>
 <span class="nc" id="L60">		}catch (IOException e) {</span>
@@ -65,36 +65,36 @@ public class AdminService {
 <span class="nc" id="L65">			return false;</span>
 <span class="nc" id="L66">		}finally {</span>
 			try {
-<span class="nc" id="L68">				in.close();</span>
-<span class="nc" id="L69">			}catch (IOException e) {</span>
+<span class="pc" id="L68">				in.close();</span>
+<span class="pc" id="L69">			}catch (IOException e) {</span>
 <span class="nc" id="L70">				Log.error(&quot;adminLogIn failed to close input stream&quot;);</span>
 			}
 <span class="nc" id="L72">		}</span>
-<span class="nc bnc" id="L73" title="All 4 branches missed.">		if(adminUsername == null || adminPassword == null) {</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">		if(adminUsername == null || adminPassword == null) {</span>
 <span class="nc" id="L74">			Log.info(&quot;adminLogIn failed to retrieve either the username or password&quot;);</span>
 <span class="nc" id="L75">			return false;</span>
 		}
-<span class="nc bnc" id="L77" title="All 4 branches missed.">		if(!username.equals(adminUsername) || !password.equals(adminPassword)) {</span>
-<span class="nc" id="L78">			Log.info(&quot;adminLogIn failed to log in because the username or password is incorrect&quot;);</span>
-<span class="nc" id="L79">			return false;</span>
+<span class="fc bfc" id="L77" title="All 4 branches covered.">		if(!username.equals(adminUsername) || !password.equals(adminPassword)) {</span>
+<span class="fc" id="L78">			Log.info(&quot;adminLogIn failed to log in because the username or password is incorrect&quot;);</span>
+<span class="fc" id="L79">			return false;</span>
 		}
-<span class="nc" id="L81">		Log.info(&quot;adminLogIn logged in to Admin&quot;);</span>
-<span class="nc" id="L82">		return true;</span>
+<span class="fc" id="L81">		Log.info(&quot;adminLogIn logged in to Admin&quot;);</span>
+<span class="fc" id="L82">		return true;</span>
 	}
 	
 	public Boolean viewUser(String username) {
-<span class="nc" id="L86">		Log.info(&quot;viewUser called and passed username &quot; + username);</span>
+<span class="fc" id="L86">		Log.info(&quot;viewUser called and passed username &quot; + username);</span>
 		try {
-<span class="nc" id="L88">			Log.info(&quot;viewUser calling sendUserQuery and passing username to try and get user object&quot;);</span>
-<span class="nc" id="L89">			viewedUser = adminOracle.sendUserQuery(username).get();</span>
-<span class="nc" id="L90">		}catch(NoSuchElementException e) {</span>
-<span class="nc" id="L91">			Log.info(&quot;viewUser returned false - user object was null&quot;);</span>
-<span class="nc" id="L92">			System.out.println(&quot;Username doesn't exist&quot;);</span>
-<span class="nc" id="L93">			return false;</span>
+<span class="fc" id="L88">			Log.info(&quot;viewUser calling sendUserQuery and passing username to try and get user object&quot;);</span>
+<span class="fc" id="L89">			viewedUser = adminOracle.sendUserQuery(username).get();</span>
+<span class="fc" id="L90">		}catch(NoSuchElementException e) {</span>
+<span class="fc" id="L91">			Log.info(&quot;viewUser returned false - user object was null&quot;);</span>
+<span class="fc" id="L92">			System.out.println(&quot;Username doesn't exist&quot;);</span>
+<span class="fc" id="L93">			return false;</span>
 		}
-<span class="nc" id="L95">		Log.info(&quot;viewUser returned true - successfully retrieved &quot; + viewedUser);</span>
-<span class="nc" id="L96">		System.out.println(&quot;Viewing &quot; + viewedUser.toString());</span>
-<span class="nc" id="L97">		return true;</span>
+<span class="fc" id="L95">		Log.info(&quot;viewUser returned true - successfully retrieved &quot; + viewedUser);</span>
+<span class="fc" id="L96">		System.out.println(&quot;Viewing &quot; + viewedUser.toString());</span>
+<span class="fc" id="L97">		return true;</span>
 	}
 	
 	public List&lt;User&gt; retrieveAllUsers(){
@@ -112,63 +112,63 @@ public class AdminService {
 	}
 	
 	public Boolean updateUsername(String username, String newName) {
-<span class="nc" id="L115">		Log.info(&quot;updateUsername called and passed &quot; + username + &quot; and &quot; + newName);</span>
-<span class="nc" id="L116">		Log.info(&quot;updateUsername calling userExists and passing username to see if user exists&quot;);</span>
-<span class="nc bnc" id="L117" title="All 2 branches missed.">		if(adminOracle.userExists(username) == false) {</span>
-<span class="nc" id="L118">			Log.info(&quot;updateUsername returning false - user doesn't exist&quot;);</span>
-<span class="nc" id="L119">			System.out.println(&quot;User doesn't exist - failed to update username&quot;);</span>
-<span class="nc" id="L120">			return false;</span>
+<span class="fc" id="L115">		Log.info(&quot;updateUsername called and passed &quot; + username + &quot; and &quot; + newName);</span>
+<span class="fc" id="L116">		Log.info(&quot;updateUsername calling userExists and passing username to see if user exists&quot;);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		if(adminOracle.userExists(username) == false) {</span>
+<span class="fc" id="L118">			Log.info(&quot;updateUsername returning false - user doesn't exist&quot;);</span>
+<span class="fc" id="L119">			System.out.println(&quot;User doesn't exist - failed to update username&quot;);</span>
+<span class="fc" id="L120">			return false;</span>
 		}
-<span class="nc" id="L122">		Log.info(&quot;updateUsername calling userExists and passing newName to see if name is taken&quot;);</span>
+<span class="fc" id="L122">		Log.info(&quot;updateUsername calling userExists and passing newName to see if name is taken&quot;);</span>
 		
-<span class="nc bnc" id="L124" title="All 2 branches missed.">		if(adminOracle.userExists(newName) == true) {</span>
-<span class="nc" id="L125">			Log.info(&quot;updateUsername returning false - new username already taken&quot;);</span>
-<span class="nc" id="L126">			System.out.println(&quot;New username already taken - failed to update username&quot;);</span>
-<span class="nc" id="L127">			return false;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if(adminOracle.userExists(newName) == true) {</span>
+<span class="fc" id="L125">			Log.info(&quot;updateUsername returning false - new username already taken&quot;);</span>
+<span class="fc" id="L126">			System.out.println(&quot;New username already taken - failed to update username&quot;);</span>
+<span class="fc" id="L127">			return false;</span>
 		}
-<span class="nc" id="L129">		Log.info(&quot;updateUsername calling callUpdateUsername and passing&quot; + username + &quot; and &quot; + newName);</span>
-<span class="nc bnc" id="L130" title="All 2 branches missed.">		if(adminOracle.callUpdateUsername(username, newName) == false) {</span>
+<span class="fc" id="L129">		Log.info(&quot;updateUsername calling callUpdateUsername and passing&quot; + username + &quot; and &quot; + newName);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if(adminOracle.callUpdateUsername(username, newName) == false) {</span>
 <span class="nc" id="L131">			Log.info(&quot;updateUsername returning false - callUpdateUsername failed&quot;);</span>
 <span class="nc" id="L132">			System.out.println(&quot;Failed to update username. Please try again&quot;);</span>
 <span class="nc" id="L133">			return false;</span>
 		}
-<span class="nc" id="L135">		Log.info(&quot;updateUsername calling userExists and passing newName to see if name now exists&quot;);</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">		if(adminOracle.userExists(newName) == false) {</span>
+<span class="fc" id="L135">		Log.info(&quot;updateUsername calling userExists and passing newName to see if name now exists&quot;);</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">		if(adminOracle.userExists(newName) == false) {</span>
 <span class="nc" id="L137">			Log.info(&quot;updateUsername returning false - username still doesn't exist&quot;);</span>
 <span class="nc" id="L138">			System.out.println(&quot;Failed to update name. Please try again&quot;);</span>
 <span class="nc" id="L139">			return false;</span>
 		}
-<span class="nc" id="L141">		Log.info(&quot;updateUsername calling sendUserQuery and passing username to see if name still exists&quot;);</span>
-<span class="nc bnc" id="L142" title="All 2 branches missed.">		if(adminOracle.userExists(username) == true) {</span>
+<span class="fc" id="L141">		Log.info(&quot;updateUsername calling sendUserQuery and passing username to see if name still exists&quot;);</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if(adminOracle.userExists(username) == true) {</span>
 <span class="nc" id="L143">			Log.info(&quot;updateUsername returning false - old username still exists&quot;);</span>
 <span class="nc" id="L144">			System.out.println(&quot;Failed to change name. Please try again&quot;);</span>
 <span class="nc" id="L145">			return false;</span>
 		}
-<span class="nc" id="L147">		Log.info(&quot;updateUsername returning true - username successfully changed&quot;);</span>
-<span class="nc" id="L148">		System.out.println(&quot;Successfully changed name from &quot; + username + &quot; to &quot; + newName);</span>
-<span class="nc" id="L149">		return true;</span>
+<span class="fc" id="L147">		Log.info(&quot;updateUsername returning true - username successfully changed&quot;);</span>
+<span class="fc" id="L148">		System.out.println(&quot;Successfully changed name from &quot; + username + &quot; to &quot; + newName);</span>
+<span class="fc" id="L149">		return true;</span>
 	}
 	
 	public Boolean deleteUser(String username) {
-<span class="nc" id="L153">		Log.info(&quot;deleteUser called and passed username &quot; + username);</span>
-<span class="nc" id="L154">		User user = null;</span>
+<span class="fc" id="L153">		Log.info(&quot;deleteUser called and passed username &quot; + username);</span>
+<span class="fc" id="L154">		User user = null;</span>
 		try {
-<span class="nc" id="L156">			Log.info(&quot;deleteUser calling sendUserQuery and passing username to try and get user object to check if it exists&quot;);</span>
-<span class="nc" id="L157">			user = adminOracle.sendUserQuery(username).get();</span>
-<span class="nc" id="L158">		}catch(NoSuchElementException e) {</span>
-<span class="nc" id="L159">			Log.info(&quot;deleteUser returned false - failed to delete user&quot;);</span>
-<span class="nc" id="L160">			System.out.println(&quot;Couldn't find user. Please make sure username is correct&quot;);</span>
-<span class="nc" id="L161">			return false;</span>
+<span class="fc" id="L156">			Log.info(&quot;deleteUser calling sendUserQuery and passing username to try and get user object to check if it exists&quot;);</span>
+<span class="fc" id="L157">			user = adminOracle.sendUserQuery(username).get();</span>
+<span class="fc" id="L158">		}catch(NoSuchElementException e) {</span>
+<span class="fc" id="L159">			Log.info(&quot;deleteUser returned false - failed to delete user&quot;);</span>
+<span class="fc" id="L160">			System.out.println(&quot;Couldn't find user. Please make sure username is correct&quot;);</span>
+<span class="fc" id="L161">			return false;</span>
 		}
-<span class="nc" id="L163">		Log.info(&quot;deleteUser calling retrieveUserAccounts and passing user to check if user has any active accounts&quot;);</span>
-<span class="nc" id="L164">		List&lt;Account&gt; accountList = accountService.retrieveUserAccounts(user.getUserId());</span>
-<span class="nc bnc" id="L165" title="All 2 branches missed.">		if(!accountList.isEmpty()) {</span>
-<span class="nc" id="L166">			Log.info(&quot;deleteUser returned false - user has active accounts&quot;);</span>
-<span class="nc" id="L167">			System.out.println(&quot;Can't delete user with active accounts&quot;);</span>
-<span class="nc" id="L168">			return false;</span>
+<span class="fc" id="L163">		Log.info(&quot;deleteUser calling retrieveUserAccounts and passing user to check if user has any active accounts&quot;);</span>
+<span class="fc" id="L164">		List&lt;Account&gt; accountList = accountService.retrieveUserAccounts(user.getUserId());</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		if(!accountList.isEmpty()) {</span>
+<span class="fc" id="L166">			Log.info(&quot;deleteUser returned false - user has active accounts&quot;);</span>
+<span class="fc" id="L167">			System.out.println(&quot;Can't delete user with active accounts&quot;);</span>
+<span class="fc" id="L168">			return false;</span>
 		}
-<span class="nc" id="L170">		Log.traceExit(&quot;Service passing username &quot; + username + &quot; to Oracle to delete user&quot;);</span>
-<span class="nc" id="L171">		return adminOracle.callDeleteUser(username);</span>
+<span class="fc" id="L170">		Log.traceExit(&quot;Service passing username &quot; + username + &quot; to Oracle to delete user&quot;);</span>
+<span class="fc" id="L171">		return adminOracle.callDeleteUser(username);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

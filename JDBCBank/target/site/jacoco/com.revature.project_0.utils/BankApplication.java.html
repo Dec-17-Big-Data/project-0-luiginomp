@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BankApplication.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JDBCBank</a> &gt; <a href="index.source.html" class="el_package">com.revature.project_0.utils</a> &gt; <span class="el_source">BankApplication.java</span></div><h1>BankApplication.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package com.revature.project_0.utils;</span>
 
-import java.lang.Thread.State;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,353 +11,661 @@ import com.revature.project_0.models.Transaction;
 import com.revature.project_0.models.User;
 import com.revature.project_0.services.*;
 
-<span class="nc" id="L15">public class BankApplication {</span>
-<span class="nc" id="L16">	private static Boolean loggedIn = false;</span>
-<span class="nc" id="L17">	private static Boolean isAdmin = false;</span>
-<span class="nc" id="L18">	private static Logger Log = LogManager.getLogger(BankApplication.class);</span>
-<span class="nc" id="L19">	private static User currentUser = null;</span>
+<span class="nc" id="L14">public class BankApplication {</span>
+<span class="nc" id="L15">	private static Boolean loggedIn = false;</span>
+<span class="nc" id="L16">	private static Boolean isAdmin = false;</span>
+<span class="nc" id="L17">	private static Logger Log = LogManager.getLogger(BankApplication.class);</span>
+<span class="nc" id="L18">	private static User currentUser = null;</span>
 	private static UserService userService;
 	private static AdminService adminService;
 	private static AccountService accountService;
-<span class="nc" id="L23">	private static enum States {Welcome, LogIn, Register, User, Admin, Terminated};</span>
-<span class="nc" id="L24">	private static States curState = States.Welcome;</span>
-<span class="nc" id="L25">	private static Boolean switched = false;</span>
+<span class="nc" id="L22">	private static enum States {Welcome, LogIn, Register, User, DeleteAccount, Deposit, Withdraw, Admin, UpdateUsername, DeleteUser, Terminated};</span>
+<span class="nc" id="L23">	private static States curState = States.Welcome;</span>
+<span class="nc" id="L24">	private static Boolean switchPrompt = true;</span>
 	
 	public static void main (String[] args) {
+<span class="nc" id="L27">		Log.info(&quot;APPLICATION STARTED&quot;);</span>
 <span class="nc" id="L28">		Scanner s = new Scanner(System.in);</span>
 <span class="nc" id="L29">		userService = UserService.getService();</span>
 <span class="nc" id="L30">		adminService = AdminService.getService();</span>
 <span class="nc" id="L31">		accountService = AccountService.getService();</span>
 <span class="nc bnc" id="L32" title="All 2 branches missed.">		while(curState != States.Terminated){</span>
-<span class="nc" id="L33">			switchPrompts();</span>
-<span class="nc" id="L34">			String input = s.nextLine();</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">			if(input == &quot;TERMINATE&quot;) {</span>
-<span class="nc" id="L36">				curState = States.Terminated;</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">			if(switchPrompt == true) {</span>
+<span class="nc" id="L34">				switchPrompts();</span>
+<span class="nc" id="L35">				switchPrompt = false;</span>
 			}
-<span class="nc bnc" id="L38" title="All 6 branches missed.">			switch(curState) {</span>
+<span class="nc" id="L37">			String input = s.nextLine();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">			if(input.equals(&quot;TERMINATE&quot;)) {</span>
+<span class="nc" id="L39">				curState = States.Terminated;</span>
+			}
+<span class="nc bnc" id="L41" title="All 11 branches missed.">			switch(curState) {</span>
 			default:
-<span class="nc" id="L40">				Log.info(&quot;main found unknown state &quot; + curState);</span>
-<span class="nc" id="L41">				break;</span>
+<span class="nc" id="L43">				Log.info(&quot;main found unknown state &quot; + curState);</span>
+<span class="nc" id="L44">				break;</span>
 			case Welcome:
-<span class="nc" id="L43">				Log.info(&quot;main entered Welcome state&quot;);</span>
-<span class="nc" id="L44">				checkWelcomeInput(input);</span>
-<span class="nc" id="L45">				break;</span>
+<span class="nc" id="L46">				Log.info(&quot;main entered Welcome state&quot;);</span>
+<span class="nc" id="L47">				welcomeActions(input);</span>
+<span class="nc" id="L48">				break;</span>
 			case LogIn:
-<span class="nc" id="L47">				Log.info(&quot;main entered LogIn state&quot;);</span>
-<span class="nc" id="L48">				String username = input;</span>
-<span class="nc" id="L49">				System.out.print(&quot;Password: &quot;);</span>
-<span class="nc" id="L50">				String password = s.nextLine();</span>
-<span class="nc" id="L51">				logIn(username, password);</span>
-<span class="nc" id="L52">				break;</span>
+<span class="nc" id="L50">				Log.info(&quot;main entered LogIn state&quot;);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L52">					changeStateTo(States.Welcome);</span>
+<span class="nc" id="L53">				}else {</span>
+<span class="nc" id="L54">					logInActions(input);</span>
+				}
+<span class="nc" id="L56">				break;</span>
 			case Register:
-<span class="nc" id="L54">				Log.info(&quot;main entered Register state&quot;);</span>
-<span class="nc" id="L55">				break;</span>
+<span class="nc" id="L58">				Log.info(&quot;main entered Register state&quot;);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">					if(isAdmin) {</span>
+<span class="nc" id="L61">						changeStateTo(States.Admin);</span>
+<span class="nc" id="L62">					}else {</span>
+<span class="nc" id="L63">						changeStateTo(States.Welcome);</span>
+					}
+<span class="nc" id="L65">				}else {</span>
+<span class="nc" id="L66">					registerActions(input);	</span>
+				}
+<span class="nc" id="L68">				break;</span>
 			case User:
-<span class="nc" id="L57">				Log.info(&quot;main entered User state&quot;);</span>
-<span class="nc" id="L58">				break;</span>
+<span class="nc" id="L70">				Log.info(&quot;main entered User state&quot;);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L72">					logOut();</span>
+<span class="nc" id="L73">				}else {</span>
+<span class="nc" id="L74">					userActions(input);</span>
+				}
+<span class="nc" id="L76">				break;</span>
+			case DeleteAccount:
+<span class="nc" id="L78">				Log.info(&quot;main entered DeleteAccount state&quot;);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L80">					changeStateTo(States.User);</span>
+<span class="nc" id="L81">				}else {</span>
+<span class="nc" id="L82">					deleteAccountActions(input);</span>
+				}
+<span class="nc" id="L84">				break;</span>
+			case Deposit:
+<span class="nc bnc" id="L86" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L87">					changeStateTo(States.User);</span>
+<span class="nc" id="L88">				}else {</span>
+<span class="nc" id="L89">					depositActions(input);</span>
+				}
+<span class="nc" id="L91">				break;</span>
+			case Withdraw:
+<span class="nc bnc" id="L93" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L94">					changeStateTo(States.User);</span>
+<span class="nc" id="L95">				}else {</span>
+<span class="nc" id="L96">					withdrawActions(input);</span>
+				}
+<span class="nc" id="L98">				break;</span>
 			case Admin:
-<span class="nc" id="L60">				Log.info(&quot;main entered Admin state&quot;);</span>
+<span class="nc" id="L100">				Log.info(&quot;main entered Admin state&quot;);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L102">					logOut();</span>
+<span class="nc" id="L103">				}else {</span>
+<span class="nc" id="L104">					adminActions(input);</span>
+				}
+<span class="nc" id="L106">				break;</span>
+			case UpdateUsername:
+<span class="nc bnc" id="L108" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L109">					changeStateTo(States.Admin);</span>
+<span class="nc" id="L110">				}else {</span>
+<span class="nc" id="L111">					updateUsernameActions(input);</span>
+				}
+<span class="nc" id="L113">				break;</span>
+			case DeleteUser:
+<span class="nc bnc" id="L115" title="All 2 branches missed.">				if(input.equals(&quot;BACK&quot;)) {</span>
+<span class="nc" id="L116">					changeStateTo(States.Admin);</span>
+<span class="nc" id="L117">				}else {</span>
+<span class="nc" id="L118">					deleteUserActions(input);</span>
+				}
 				break;
 			}
-<span class="nc" id="L63">			switched = false;</span>
 		}
-<span class="nc" id="L65">		s.close();</span>
-<span class="nc" id="L66">		Log.info(&quot;APPLICATION TERMINATED&quot;);</span>
-<span class="nc" id="L67">	}</span>
+<span class="nc" id="L123">		s.close();</span>
+<span class="nc" id="L124">		System.out.println(&quot;Application terminated&quot;);</span>
+<span class="nc" id="L125">		Log.info(&quot;APPLICATION TERMINATED&quot;);</span>
+<span class="nc" id="L126">	}</span>
 	
 	private static void switchPrompts() {
-<span class="nc bnc" id="L70" title="All 2 branches missed.">		if(switched == false) {</span>
-<span class="nc bnc" id="L71" title="All 6 branches missed.">			switch(curState) {</span>
-			default:
-<span class="nc" id="L73">				Log.info(&quot;stateMachine found unknown state &quot; + curState);</span>
-<span class="nc" id="L74">				System.out.println(&quot;Something happened, please refresh application&quot;);</span>
-<span class="nc" id="L75">				break;</span>
-			case Welcome:
-<span class="nc" id="L77">				Log.info(&quot;stateMachine entered Welcome state&quot;);</span>
-<span class="nc" id="L78">				System.out.println(&quot;Welcome to JDBC Bank&quot;);</span>
-<span class="nc" id="L79">				System.out.println(&quot;Enter the number of one of the following options:&quot;);</span>
-<span class="nc" id="L80">				System.out.println(&quot;1. Log in&quot;);</span>
-<span class="nc" id="L81">				System.out.println(&quot;2. Register&quot;);</span>
-<span class="nc" id="L82">				System.out.println(&quot;3. Terminate Program&quot;);</span>
-<span class="nc" id="L83">				System.out.print(&quot;Input: &quot;);</span>
-<span class="nc" id="L84">				break;</span>
-			case LogIn:
-<span class="nc" id="L86">				Log.info(&quot;stateMachine entered LogIn state&quot;);</span>
-<span class="nc" id="L87">				System.out.println(&quot;Login Menu&quot;);</span>
-<span class="nc" id="L88">				System.out.println(&quot;Enter your username and password or enter 'return' to go back to main menu&quot;);</span>
-<span class="nc" id="L89">				System.out.print(&quot;Username: &quot;);</span>
-<span class="nc" id="L90">				break;</span>
-			case Register:
-<span class="nc" id="L92">				Log.info(&quot;stateMachine entered Register state&quot;);</span>
-<span class="nc" id="L93">				break;</span>
-			case User:
-<span class="nc" id="L95">				Log.info(&quot;stateMachine entered User state&quot;);</span>
-<span class="nc" id="L96">				break;</span>
-			case Admin:
-<span class="nc" id="L98">				Log.info(&quot;stateMachine entered Admin state&quot;);</span>
-				break;
-			}
-<span class="nc" id="L101">			switched = true;</span>
-		}
-<span class="nc" id="L103">	}</span>
-	
-	private static void checkWelcomeInput(String input) {
-<span class="nc bnc" id="L106" title="All 10 branches missed.">		switch(input) {</span>
+<span class="nc bnc" id="L129" title="All 11 branches missed.">		switch(curState) {</span>
 		default:
-<span class="nc" id="L108">			System.out.println(&quot;Unknown command. Enter one of the given options&quot;);</span>
-<span class="nc" id="L109">			break;</span>
-		case &quot;1&quot;:
-<span class="nc" id="L111">			curState = States.LogIn;</span>
-<span class="nc" id="L112">			break;</span>
-		case &quot;2&quot;:
-<span class="nc" id="L114">			curState = States.Register;</span>
-<span class="nc" id="L115">			break;</span>
-		case &quot;3&quot;:
-<span class="nc" id="L117">			curState = States.Terminated;</span>
+<span class="nc" id="L131">			System.out.println(&quot;Something happened, please refresh application&quot;);</span>
+<span class="nc" id="L132">			break;</span>
+		case Welcome:
+<span class="nc" id="L134">			System.out.println(&quot;_WELCOME MENU_\n&quot;);</span>
+<span class="nc" id="L135">			System.out.println(&quot;Enter TERMINATE at any time to terminate the program\n&quot;);</span>
+<span class="nc" id="L136">			System.out.println(&quot;1. Log in&quot;);</span>
+<span class="nc" id="L137">			System.out.println(&quot;2. Register&quot;);</span>
+<span class="nc" id="L138">			promptInput();</span>
+<span class="nc" id="L139">			break;</span>
+		case LogIn:
+<span class="nc" id="L141">			System.out.println(&quot;_LOGIN MENU_\n&quot;);</span>
+<span class="nc" id="L142">			System.out.println(&quot;Enter BACK to return to welcome menu&quot;);</span>
+<span class="nc" id="L143">			System.out.println(&quot;Enter your username and password with space between&quot;);</span>
+<span class="nc" id="L144">			promptInput();</span>
+<span class="nc" id="L145">			break;</span>
+		case Register:
+<span class="nc" id="L147">			System.out.println(&quot;_REGISTER MENU_\n&quot;);</span>
+<span class="nc" id="L148">			System.out.println(&quot;Enter BACK to return to welcome menu&quot;);</span>
+<span class="nc" id="L149">			System.out.println(&quot;Enter new username and password in the same line&quot;);</span>
+<span class="nc" id="L150">			System.out.println(&quot;Separate each by using a space&quot;);</span>
+<span class="nc" id="L151">			promptInput();</span>
+<span class="nc" id="L152">			break;</span>
+		case User:
+<span class="nc" id="L154">			System.out.println(&quot;_USER MENU_\n&quot;);</span>
+<span class="nc" id="L155">			System.out.println(&quot;1. View accounts&quot;);</span>
+<span class="nc" id="L156">			System.out.println(&quot;2. Create new account&quot;);</span>
+<span class="nc" id="L157">			System.out.println(&quot;3. Delete an account&quot;);</span>
+<span class="nc" id="L158">			System.out.println(&quot;4. Make a deposit&quot;);</span>
+<span class="nc" id="L159">			System.out.println(&quot;5. make a withdrawal&quot;);</span>
+//			System.out.println(&quot;6. View transactions&quot;);
+<span class="nc" id="L161">			System.out.println(&quot;6. Log out&quot;);</span>
+<span class="nc" id="L162">			promptInput();</span>
+<span class="nc" id="L163">			break;</span>
+		case DeleteAccount:
+<span class="nc" id="L165">			System.out.println(&quot;_DELETE ACCOUNT_\n&quot;);</span>
+<span class="nc" id="L166">			System.out.println(&quot;Enter BACK to return to user menu&quot;);</span>
+<span class="nc" id="L167">			System.out.println(&quot;Enter Account ID&quot;);</span>
+<span class="nc" id="L168">			promptInput();</span>
+<span class="nc" id="L169">			break;</span>
+		case Deposit:
+<span class="nc" id="L171">			System.out.println(&quot;_DEPOSIT MENU_\n&quot;);</span>
+<span class="nc" id="L172">			System.out.println(&quot;Enter BACK to return to user menu&quot;);</span>
+<span class="nc" id="L173">			System.out.println(&quot;Enter account ID and amount in the same line&quot;);</span>
+<span class="nc" id="L174">			System.out.println(&quot;Separate each by using a space&quot;);</span>
+<span class="nc" id="L175">			promptInput();</span>
+<span class="nc" id="L176">			break;</span>
+		case Withdraw:
+<span class="nc" id="L178">			System.out.println(&quot;_WITHDRAW MENU_\n&quot;);</span>
+<span class="nc" id="L179">			System.out.println(&quot;Enter BACK to return to user menu&quot;);</span>
+<span class="nc" id="L180">			System.out.println(&quot;Enter account ID and amount in the same line&quot;);</span>
+<span class="nc" id="L181">			System.out.println(&quot;Separate each by using a space&quot;);</span>
+<span class="nc" id="L182">			promptInput();</span>
+<span class="nc" id="L183">			break;</span>
+		case Admin:
+<span class="nc" id="L185">			System.out.println(&quot;_ADMIN MENU_\n&quot;);</span>
+<span class="nc" id="L186">			System.out.println(&quot;1. View all users&quot;);</span>
+<span class="nc" id="L187">			System.out.println(&quot;2. Create a new user&quot;);</span>
+<span class="nc" id="L188">			System.out.println(&quot;3. Update a username&quot;);</span>
+<span class="nc" id="L189">			System.out.println(&quot;4. Delete a user&quot;);</span>
+<span class="nc" id="L190">			System.out.println(&quot;5. log out&quot;);</span>
+<span class="nc" id="L191">			promptInput();</span>
+<span class="nc" id="L192">			break;</span>
+		case UpdateUsername:
+<span class="nc" id="L194">			System.out.println(&quot;_USERNAME UPDATE MENU_\n&quot;);</span>
+<span class="nc" id="L195">			System.out.println(&quot;Enter current username and new username in the same line&quot;);</span>
+<span class="nc" id="L196">			System.out.println(&quot;Separate each by using a space&quot;);</span>
+<span class="nc" id="L197">			promptInput();</span>
+<span class="nc" id="L198">			break;</span>
+		case DeleteUser:
+<span class="nc" id="L200">			System.out.println(&quot;_USER DELETE MENU_\n&quot;);</span>
+<span class="nc" id="L201">			System.out.println(&quot;Enter username&quot;);</span>
+<span class="nc" id="L202">			promptInput();</span>
+			break;
 		}
-<span class="nc" id="L119">	}</span>
+<span class="nc" id="L205">	}</span>
+	
+	private static void changeStateTo(States newState) {
+<span class="nc" id="L208">		curState = newState;</span>
+<span class="nc" id="L209">		System.out.println(&quot;\n===========================================================\n&quot;);</span>
+<span class="nc" id="L210">		switchPrompt = true;</span>
+<span class="nc" id="L211">	}</span>
+	
+	private static void promptInput() {
+<span class="nc" id="L214">		System.out.print(&quot;\nInput: &quot;);</span>
+<span class="nc" id="L215">	}</span>
+	
+	private static void welcomeActions(String input) {
+<span class="nc bnc" id="L218" title="All 7 branches missed.">		switch(input) {</span>
+		default:
+<span class="nc" id="L220">			System.out.println(&quot;Unknown command. Enter one of the given options&quot;);</span>
+<span class="nc" id="L221">			promptInput();</span>
+<span class="nc" id="L222">			break;</span>
+		case &quot;1&quot;:
+<span class="nc" id="L224">			changeStateTo(States.LogIn);</span>
+<span class="nc" id="L225">			break;</span>
+		case &quot;2&quot;:
+<span class="nc" id="L227">			changeStateTo(States.Register);</span>
+			break;
+		}
+<span class="nc" id="L230">	}</span>
+	
+	private static Boolean logInActions(String input) {
+<span class="nc" id="L233">		String[] strings = input.split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">		if(strings.length != 2) {</span>
+<span class="nc" id="L235">			Log.info(&quot;checkLogInInput returning false - input should be two words. Actual amount is &quot; + strings.length);</span>
+<span class="nc" id="L236">			System.out.println(&quot;Incorrect format&quot;);</span>
+<span class="nc" id="L237">			promptInput();</span>
+<span class="nc" id="L238">			return false;</span>
+		}
+<span class="nc" id="L240">		String username = strings[0];</span>
+<span class="nc" id="L241">		String password = strings[1];</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">		if(logIn(username, password) != true) {</span>
+<span class="nc" id="L243">			Log.info(&quot;checkLogInInput returning false - failed to log in&quot;);</span>
+<span class="nc" id="L244">			promptInput();</span>
+<span class="nc" id="L245">			return false;</span>
+		}
+<span class="nc" id="L247">		Log.info(&quot;checkLogInInput returning true - successfully logged in&quot;);</span>
+<span class="nc" id="L248">		return true;</span>
+	}
+	
+	private static Boolean userActions(String input) {
+<span class="nc bnc" id="L252" title="All 19 branches missed.">		switch(input) {</span>
+		default:
+<span class="nc" id="L254">			System.out.println(&quot;Unknown command&quot;);</span>
+<span class="nc" id="L255">			promptInput();</span>
+<span class="nc" id="L256">			break;</span>
+		case &quot;1&quot;:	//View Accounts
+<span class="nc" id="L258">			userViewAccounts();</span>
+<span class="nc" id="L259">			break;</span>
+		case &quot;2&quot;:	//Create Account
+<span class="nc" id="L261">			userCreateAccount();</span>
+<span class="nc" id="L262">			break;</span>
+		case &quot;3&quot;:	//Delete Account
+<span class="nc" id="L264">			changeStateTo(States.DeleteAccount);</span>
+<span class="nc" id="L265">			break;</span>
+		case &quot;4&quot;:	//Deposit
+<span class="nc" id="L267">			changeStateTo(States.Deposit);</span>
+<span class="nc" id="L268">			break;</span>
+		case &quot;5&quot;:	//Withdraw
+<span class="nc" id="L270">			changeStateTo(States.Withdraw);</span>
+<span class="nc" id="L271">			break;</span>
+//		case &quot;6&quot;:	//Transactions
+//			break;
+		case &quot;6&quot;:	//Log out
+<span class="nc" id="L275">			logOut();</span>
+			break;
+		}
+<span class="nc" id="L278">		return true;</span>
+	}
+	
+	private static Boolean registerActions(String input) {
+<span class="nc" id="L282">		String[] strings = input.split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">		if(strings.length != 2) {</span>
+<span class="nc" id="L284">			System.out.println(&quot;Input not recognized. Should be username and password with space in between&quot;);</span>
+<span class="nc" id="L285">			promptInput();</span>
+<span class="nc" id="L286">			return false;</span>
+		}
+<span class="nc" id="L288">		String username = strings[0];</span>
+<span class="nc" id="L289">		String password = strings[1];</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">		if(createNewUser(username, password) != true) {</span>
+<span class="nc" id="L291">			promptInput();</span>
+<span class="nc" id="L292">			return false;</span>
+		}
+<span class="nc" id="L294">		promptInput();</span>
+<span class="nc" id="L295">		return true;</span>
+	}
+	
+	private static Boolean deleteAccountActions(String input) {
+<span class="nc" id="L299">		Integer accountId = null;</span>
+		try {
+<span class="nc" id="L301">			accountId = (Integer)Integer.parseInt(input);</span>
+<span class="nc" id="L302">		}catch(NumberFormatException e) {</span>
+<span class="nc" id="L303">			System.out.println(input + &quot; is not a valid account ID&quot;);</span>
+<span class="nc" id="L304">			promptInput();</span>
+<span class="nc" id="L305">			return false;</span>
+		}
+<span class="nc bnc" id="L307" title="All 2 branches missed.">		if(userDeleteAccount(accountId) == false) {</span>
+<span class="nc" id="L308">			promptInput();</span>
+<span class="nc" id="L309">			return false;</span>
+		}
+<span class="nc" id="L311">		promptInput();</span>
+<span class="nc" id="L312">		return true;</span>
+	}
+	
+	private static void depositActions(String input) {
+<span class="nc" id="L316">		String[] strings = input.split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">		if(strings.length != 2) {</span>
+<span class="nc" id="L318">			System.out.println(&quot;Input format is incorrect&quot;);</span>
+<span class="nc" id="L319">			promptInput();</span>
+<span class="nc" id="L320">			return;</span>
+		}
+<span class="nc" id="L322">		Integer accountId = null;</span>
+<span class="nc" id="L323">		Double amount = null;</span>
+		try {
+<span class="nc" id="L325">			accountId = ((Integer)Integer.parseInt(strings[0]));</span>
+<span class="nc" id="L326">			amount = ((Double)Double.parseDouble(strings[1]));</span>
+<span class="nc" id="L327">		}catch(NumberFormatException e) {</span>
+<span class="nc" id="L328">			System.out.println(&quot;Input format is incorrect&quot;);</span>
+<span class="nc" id="L329">			promptInput();</span>
+<span class="nc" id="L330">			return;</span>
+		}
+<span class="nc bnc" id="L332" title="All 2 branches missed.">		if(userDepositToAccount(accountId, amount) == false) {</span>
+<span class="nc" id="L333">			promptInput();</span>
+<span class="nc" id="L334">			return;</span>
+		}
+<span class="nc" id="L336">		promptInput();</span>
+<span class="nc" id="L337">		return;</span>
+	}
+	
+	private static void withdrawActions(String input) {
+<span class="nc" id="L341">		String[] strings = input.split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">		if(strings.length != 2) {</span>
+<span class="nc" id="L343">			System.out.println(&quot;Input format is incorrect&quot;);</span>
+<span class="nc" id="L344">			promptInput();</span>
+<span class="nc" id="L345">			return;</span>
+		}
+<span class="nc" id="L347">		Integer accountId = null;</span>
+<span class="nc" id="L348">		Double amount = null;</span>
+		try {
+<span class="nc" id="L350">			accountId = ((Integer)Integer.parseInt(strings[0]));</span>
+<span class="nc" id="L351">			amount = ((Double)Double.parseDouble(strings[1]));</span>
+<span class="nc" id="L352">		}catch(NumberFormatException e) {</span>
+<span class="nc" id="L353">			System.out.println(&quot;Input format is incorrect&quot;);</span>
+<span class="nc" id="L354">			promptInput();</span>
+<span class="nc" id="L355">			return;</span>
+		}
+<span class="nc bnc" id="L357" title="All 2 branches missed.">		if(userWithdrawFromAccount(accountId, amount) == false) {</span>
+<span class="nc" id="L358">			promptInput();</span>
+<span class="nc" id="L359">			return;</span>
+		}
+<span class="nc" id="L361">		promptInput();</span>
+<span class="nc" id="L362">		return;</span>
+	}
+	
+	private static void adminActions(String input) {
+<span class="nc bnc" id="L366" title="All 16 branches missed.">		switch(input) {</span>
+		default: 
+<span class="nc" id="L368">			System.out.println(&quot;Unknown command&quot;);</span>
+<span class="nc" id="L369">			promptInput();</span>
+<span class="nc" id="L370">			break;</span>
+		case &quot;1&quot;:	//view all users
+<span class="nc" id="L372">			adminViewAllUsers();</span>
+<span class="nc" id="L373">			break;</span>
+		case &quot;2&quot;:	//create a new user
+<span class="nc" id="L375">			changeStateTo(States.Register);</span>
+<span class="nc" id="L376">			break;</span>
+		case &quot;3&quot;:	//update a username
+<span class="nc" id="L378">			changeStateTo(States.UpdateUsername);</span>
+<span class="nc" id="L379">			break;</span>
+		case &quot;4&quot;:	//delete a user
+<span class="nc" id="L381">			changeStateTo(States.DeleteUser);</span>
+<span class="nc" id="L382">			break;</span>
+		case &quot;5&quot;:	//log out
+<span class="nc" id="L384">			logOut();</span>
+			break;
+		}
+<span class="nc" id="L387">	}</span>
+	
+	private static void updateUsernameActions(String input) {
+<span class="nc" id="L390">		String[] strings = input.split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">		if(strings.length != 2) {</span>
+<span class="nc" id="L392">			System.out.println(&quot;Input not recognized. Should be username and password with space in between&quot;);</span>
+<span class="nc" id="L393">			promptInput();</span>
+<span class="nc" id="L394">			return;</span>
+		}
+<span class="nc" id="L396">		String username = strings[0];</span>
+<span class="nc" id="L397">		String password = strings[1];</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">		if(adminUpdateUsername(username, password) != true) {</span>
+<span class="nc" id="L399">			promptInput();</span>
+<span class="nc" id="L400">			return;</span>
+		}
+<span class="nc" id="L402">		promptInput();</span>
+<span class="nc" id="L403">		return;</span>
+	}
+	
+	private static void deleteUserActions(String input) {
+<span class="nc" id="L407">		adminDeleteUser(input);</span>
+<span class="nc" id="L408">		promptInput();</span>
+<span class="nc" id="L409">	}</span>
 	
 	//A registered user can login with their username and password  
 	private static Boolean logIn(String username, String password) {
-<span class="nc" id="L123">		Log.info(&quot;logIn called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">		if(loggedIn == true) {</span>
-<span class="nc" id="L125">			Log.info(&quot;logIn returned false - already logged in&quot; + System.lineSeparator());</span>
-<span class="nc" id="L126">			System.out.println(&quot;Already logged in&quot;);</span>
-<span class="nc" id="L127">			return false;</span>
+<span class="nc" id="L413">		Log.info(&quot;logIn called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">		if(loggedIn == true) {</span>
+<span class="nc" id="L415">			Log.info(&quot;logIn returned false - already logged in&quot; + System.lineSeparator());</span>
+<span class="nc" id="L416">			System.out.println(&quot;Already logged in&quot;);</span>
+<span class="nc" id="L417">			promptInput();</span>
+<span class="nc" id="L418">			return false;</span>
 		}
-<span class="nc" id="L129">		System.out.println(&quot;Logging in&quot;);</span>
-<span class="nc" id="L130">		Log.info(&quot;LogIn calling adminLogIn and passing username and password&quot;);</span>
-<span class="nc" id="L131">		loggedIn = adminService.adminLogIn(username, password);</span>
-<span class="nc bnc" id="L132" title="All 2 branches missed.">		if(loggedIn == true) {</span>
-<span class="nc" id="L133">			isAdmin = true;</span>
-<span class="nc" id="L134">			currentUser = null;</span>
-<span class="nc" id="L135">			Log.info(&quot;logIn returned true - logged in as admin&quot; + System.lineSeparator());</span>
-<span class="nc" id="L136">			System.out.println(&quot;Logged in as admin&quot;);</span>
-<span class="nc" id="L137">			return true;</span>
+<span class="nc" id="L420">		System.out.println(&quot;Logging in&quot;);</span>
+<span class="nc" id="L421">		Log.info(&quot;LogIn calling adminLogIn and passing username and password&quot;);</span>
+<span class="nc" id="L422">		loggedIn = adminService.adminLogIn(username, password);</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">		if(loggedIn == true) {</span>
+<span class="nc" id="L424">			isAdmin = true;</span>
+<span class="nc" id="L425">			currentUser = null;</span>
+<span class="nc" id="L426">			Log.info(&quot;logIn returned true - logged in as admin&quot; + System.lineSeparator());</span>
+<span class="nc" id="L427">			System.out.println(&quot;Logged in as admin&quot;);</span>
+<span class="nc" id="L428">			changeStateTo(States.Admin);</span>
+<span class="nc" id="L429">			return true;</span>
 		}
-<span class="nc" id="L139">		Log.info(&quot;LogIn calling userLogIn and passing username and password and retrieving user object&quot;);</span>
-<span class="nc" id="L140">		currentUser = userService.userLogIn(username, password);</span>
-<span class="nc" id="L141">		Log.info(&quot;LogIn checking if user object exists&quot;);</span>
-<span class="nc bnc" id="L142" title="All 2 branches missed.">		loggedIn = currentUser != null ? true : false;</span>
-<span class="nc bnc" id="L143" title="All 2 branches missed.">		if(loggedIn == true) {</span>
-<span class="nc" id="L144">			Log.info(&quot;logIn returned true - logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L145">			System.out.println(&quot;Logged in as user &quot; + username);</span>
-<span class="nc" id="L146">			return true;</span>
+<span class="nc" id="L431">		Log.info(&quot;LogIn calling userLogIn and passing username and password and retrieving user object&quot;);</span>
+<span class="nc" id="L432">		currentUser = userService.userLogIn(username, password);</span>
+<span class="nc" id="L433">		Log.info(&quot;LogIn checking if user object exists&quot;);</span>
+<span class="nc bnc" id="L434" title="All 2 branches missed.">		loggedIn = currentUser != null ? true : false;</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">		if(loggedIn == true) {</span>
+<span class="nc" id="L436">			Log.info(&quot;logIn returned true - logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L437">			System.out.println(&quot;Logged in as user &quot; + username);</span>
+<span class="nc" id="L438">			changeStateTo(States.User);</span>
+<span class="nc" id="L439">			return true;</span>
 		}
-<span class="nc" id="L148">		Log.info(&quot;logIn returned false - parameters didn't match anything&quot; + System.lineSeparator());</span>
-<span class="nc" id="L149">		System.out.println(&quot;Couldn't verify the username or password&quot;);</span>
-<span class="nc" id="L150">		return false;</span>
+<span class="nc" id="L441">		Log.info(&quot;logIn returned false - parameters didn't match anything&quot; + System.lineSeparator());</span>
+<span class="nc" id="L442">		System.out.println(&quot;user doesn't exist&quot;);</span>
+<span class="nc" id="L443">		return false;</span>
 	}
 	
 	private static Boolean logOut() {
-<span class="nc" id="L154">		Log.info(&quot;logOut called&quot;);</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">		if(loggedIn == false) {</span>
-<span class="nc" id="L156">			Log.info(&quot;logOut returned false - already logged off&quot; + System.lineSeparator());</span>
-<span class="nc" id="L157">			System.out.println(&quot;Already logged out&quot;);</span>
-<span class="nc" id="L158">			return false;</span>
+<span class="nc" id="L447">		Log.info(&quot;logOut called&quot;);</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">		if(loggedIn == false) {</span>
+<span class="nc" id="L449">			Log.info(&quot;logOut returned false - already logged off&quot; + System.lineSeparator());</span>
+<span class="nc" id="L450">			System.out.println(&quot;Already logged out&quot;);</span>
+<span class="nc" id="L451">			promptInput();</span>
+<span class="nc" id="L452">			return false;</span>
 		}
-<span class="nc" id="L160">		System.out.println(&quot;Logging out&quot;);</span>
-<span class="nc" id="L161">		isAdmin = false;</span>
-<span class="nc" id="L162">		loggedIn = false;</span>
-<span class="nc" id="L163">		currentUser = null;</span>
-<span class="nc" id="L164">		Log.info(&quot;logOut returned true - successfully logged off&quot; + System.lineSeparator());</span>
-<span class="nc" id="L165">		System.out.println(&quot;Logged out&quot;);</span>
-<span class="nc" id="L166">		return true;</span>
+<span class="nc" id="L454">		System.out.println(&quot;Logging out&quot;);</span>
+<span class="nc" id="L455">		isAdmin = false;</span>
+<span class="nc" id="L456">		loggedIn = false;</span>
+<span class="nc" id="L457">		currentUser = null;</span>
+<span class="nc" id="L458">		Log.info(&quot;logOut returned true - successfully logged off&quot; + System.lineSeparator());</span>
+<span class="nc" id="L459">		System.out.println(&quot;Logged out&quot;);</span>
+<span class="nc" id="L460">		changeStateTo(States.Welcome);</span>
+<span class="nc" id="L461">		return true;</span>
 	}
 	
 	//An unregistered user can register by creating a username and password.
 	//A superuser can create users.
 	private static Boolean createNewUser(String username, String password) {
-<span class="nc" id="L172">		Log.info(&quot;register called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
-<span class="nc" id="L173">		Log.info(&quot;register checking if currently logged in as user or admin&quot;);</span>
-<span class="nc bnc" id="L174" title="All 4 branches missed.">		if(loggedIn == true &amp;&amp; isAdmin == false) {</span>
-<span class="nc" id="L175">			Log.info(&quot;register returned false - currently logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L176">			System.out.println(&quot;Must be logged out of user to register a new user&quot;);</span>
-<span class="nc" id="L177">			return false;</span>
+<span class="nc" id="L467">		Log.info(&quot;register called and passed username &quot; + username + &quot; and password [Hidden]&quot;);</span>
+<span class="nc" id="L468">		Log.info(&quot;register checking if currently logged in as user or admin&quot;);</span>
+<span class="nc bnc" id="L469" title="All 4 branches missed.">		if(loggedIn == true &amp;&amp; isAdmin == false) {</span>
+<span class="nc" id="L470">			Log.info(&quot;register returned false - currently logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L471">			System.out.println(&quot;Must be logged out of user to register a new user&quot;);</span>
+<span class="nc" id="L472">			return false;</span>
 		}
-<span class="nc" id="L179">		System.out.println(&quot;Registering new user&quot;);</span>
-<span class="nc" id="L180">		Log.info(&quot;register calling createUser, passing username and password, and checking result&quot;);</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">		if(userService.createUser(username, password) == null) {</span>
-<span class="nc" id="L182">			Log.info(&quot;register returned false - createUser failed&quot; + System.lineSeparator());</span>
-<span class="nc" id="L183">			return false;</span>
+<span class="nc" id="L474">		System.out.println(&quot;Registering new user&quot;);</span>
+<span class="nc" id="L475">		Log.info(&quot;register calling createUser, passing username and password, and checking result&quot;);</span>
+<span class="nc bnc" id="L476" title="All 2 branches missed.">		if(userService.createUser(username, password) == null) {</span>
+<span class="nc" id="L477">			Log.info(&quot;register returned false - createUser failed&quot; + System.lineSeparator());</span>
+<span class="nc" id="L478">			return false;</span>
 		}
-<span class="nc" id="L185">		Log.info(&quot;register returned true - createUser succeeded&quot; + System.lineSeparator());</span>
-<span class="nc" id="L186">		System.out.println(&quot;Successfully registered new user.&quot;);</span>
-<span class="nc" id="L187">		return true;</span>
+<span class="nc" id="L480">		Log.info(&quot;register returned true - createUser succeeded&quot; + System.lineSeparator());</span>
+<span class="nc" id="L481">		System.out.println(&quot;Successfully registered new user.&quot;);</span>
+<span class="nc" id="L482">		return true;</span>
 	}
 	
 	private static Boolean userCreateAccount() {
-<span class="nc" id="L191">		Log.info(&quot;userCreateAccount called&quot;);</span>
-<span class="nc" id="L192">		Log.info(&quot;userCreateAccount checking if user is logged in&quot;);</span>
-<span class="nc bnc" id="L193" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
-<span class="nc" id="L194">			Log.info(&quot;userCreateAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L195">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
-<span class="nc" id="L196">			return false;</span>
+<span class="nc" id="L486">		Log.info(&quot;userCreateAccount called&quot;);</span>
+<span class="nc" id="L487">		Log.info(&quot;userCreateAccount checking if user is logged in&quot;);</span>
+<span class="nc bnc" id="L488" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
+<span class="nc" id="L489">			Log.info(&quot;userCreateAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L490">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
+<span class="nc" id="L491">			promptInput();</span>
+<span class="nc" id="L492">			return false;</span>
 		}
-<span class="nc" id="L198">		System.out.println(&quot;Creating new bank account&quot;);</span>
-<span class="nc" id="L199">		Log.info(&quot;userCreateAccount calling createAccount and passing ID from current user object to try and get account object&quot;);</span>
-<span class="nc bnc" id="L200" title="All 2 branches missed.">		if(accountService.createAccount(currentUser.getUserId()) == null) {</span>
-<span class="nc" id="L201">			Log.info(&quot;userCreateAccount returned false - createAccount failed&quot; + System.lineSeparator());</span>
-<span class="nc" id="L202">			return false;</span>
+<span class="nc" id="L494">		System.out.println(&quot;Creating new bank account&quot;);</span>
+<span class="nc" id="L495">		Log.info(&quot;userCreateAccount calling createAccount and passing ID from current user object to try and get account object&quot;);</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">		if(accountService.createAccount(currentUser.getUserId()) == null) {</span>
+<span class="nc" id="L497">			Log.info(&quot;userCreateAccount returned false - createAccount failed&quot; + System.lineSeparator());</span>
+<span class="nc" id="L498">			System.out.println(&quot;Something went wrong. Please try again&quot;);</span>
+<span class="nc" id="L499">			promptInput();</span>
+<span class="nc" id="L500">			return false;</span>
 		}
-<span class="nc" id="L204">		Log.info(&quot;userCreateAccount returned true - createAccount succeeded&quot; + System.lineSeparator());</span>
-<span class="nc" id="L205">		return true;</span>
+<span class="nc" id="L502">		Log.info(&quot;userCreateAccount returned true - createAccount succeeded&quot; + System.lineSeparator());</span>
+<span class="nc" id="L503">		promptInput();</span>
+<span class="nc" id="L504">		return true;</span>
 	}
 	
 	private static Boolean userViewAccounts() {
-<span class="nc" id="L209">		Log.info(&quot;userViewAccounts called&quot;);</span>
-<span class="nc" id="L210">		Log.info(&quot;userViewAccounts checking if user is logged in&quot;);</span>
-<span class="nc bnc" id="L211" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
-<span class="nc" id="L212">			Log.info(&quot;userViewAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L213">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
-<span class="nc" id="L214">			return false;</span>
+<span class="nc" id="L508">		Log.info(&quot;userViewAccounts called&quot;);</span>
+<span class="nc" id="L509">		Log.info(&quot;userViewAccounts checking if user is logged in&quot;);</span>
+<span class="nc bnc" id="L510" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
+<span class="nc" id="L511">			Log.info(&quot;userViewAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L512">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
+<span class="nc" id="L513">			promptInput();</span>
+<span class="nc" id="L514">			return false;</span>
 		}
-<span class="nc" id="L216">		System.out.println(&quot;Viewing all bank accounts&quot;);</span>
-<span class="nc" id="L217">		Log.info(&quot;userViewAccounts calling retrieveUserAccounts and passing ID from current user object to try and get list of account objects&quot;);</span>
-<span class="nc" id="L218">		List&lt;Account&gt; accountList = accountService.retrieveUserAccounts(currentUser.getUserId());</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">		if(accountList.isEmpty()) {</span>
-<span class="nc" id="L220">			Log.info(&quot;userViewAccount found no accounts for user&quot;);</span>
+<span class="nc" id="L516">		System.out.println(&quot;Viewing all bank accounts&quot;);</span>
+<span class="nc" id="L517">		Log.info(&quot;userViewAccounts calling retrieveUserAccounts and passing ID from current user object to try and get list of account objects&quot;);</span>
+<span class="nc" id="L518">		List&lt;Account&gt; accountList = accountService.retrieveUserAccounts(currentUser.getUserId());</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">		if(accountList.isEmpty()) {</span>
+<span class="nc" id="L520">			Log.info(&quot;userViewAccount found no accounts for user&quot;);</span>
+<span class="nc" id="L521">			System.out.println(&quot;No active accounts&quot;);</span>
+<span class="nc" id="L522">			promptInput();</span>
+<span class="nc" id="L523">			return true;</span>
 		}
-<span class="nc" id="L222">		Log.info(&quot;userViewAccount iterating through list&quot;);</span>
-<span class="nc bnc" id="L223" title="All 2 branches missed.">		for (int i = 0; i &lt; accountList.size(); i++) {</span>
-<span class="nc" id="L224">			Account account = accountList.get(i);</span>
-<span class="nc" id="L225">			Log.info(&quot;userViewAccount displayed &quot; + account.toString());</span>
-<span class="nc" id="L226">			System.out.println(account.toString());</span>
+<span class="nc" id="L525">		Log.info(&quot;userViewAccount iterating through list&quot;);</span>
+<span class="nc bnc" id="L526" title="All 2 branches missed.">		for (int i = 0; i &lt; accountList.size(); i++) {</span>
+<span class="nc" id="L527">			Account account = accountList.get(i);</span>
+<span class="nc" id="L528">			Log.info(&quot;userViewAccount displayed &quot; + account.toString());</span>
+<span class="nc" id="L529">			System.out.println(account.toString());</span>
 		}
-<span class="nc" id="L228">		Log.info(&quot;userViewAccount completed retrieving accounts&quot; + System.lineSeparator());</span>
-<span class="nc" id="L229">		System.out.println(&quot;Completed searching for accounts&quot;);</span>
-<span class="nc" id="L230">		return true;</span>
+<span class="nc" id="L531">		Log.info(&quot;userViewAccount completed retrieving accounts&quot; + System.lineSeparator());</span>
+<span class="nc" id="L532">		System.out.println(&quot;Completed search for accounts&quot;);</span>
+<span class="nc" id="L533">		promptInput();</span>
+<span class="nc" id="L534">		return true;</span>
 	}
 	
 	private static Boolean userDeleteAccount(Integer accountId) {
-<span class="nc" id="L234">		Log.info(&quot;userDeleteAccount called and passed account ID &quot; + accountId);</span>
-<span class="nc" id="L235">		Log.info(&quot;userDeleteAccount checking if user is logged in&quot;);</span>
-<span class="nc bnc" id="L236" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
-<span class="nc" id="L237">			Log.info(&quot;userDeleteAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L238">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
-<span class="nc" id="L239">			return false;</span>
+<span class="nc" id="L538">		Log.info(&quot;userDeleteAccount called and passed account ID &quot; + accountId);</span>
+<span class="nc" id="L539">		Log.info(&quot;userDeleteAccount checking if user is logged in&quot;);</span>
+<span class="nc bnc" id="L540" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
+<span class="nc" id="L541">			Log.info(&quot;userDeleteAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L542">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
+<span class="nc" id="L543">			return false;</span>
 		}
-<span class="nc" id="L241">		Log.info(&quot;userDeleteAccount calling deleteAccount and passing account ID and user ID&quot;);</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">		if(accountService.deleteAccount(accountId, currentUser.getUserId()) == false) {</span>
-<span class="nc" id="L243">			Log.info(&quot;userDeleteAccount returning false - deleteAccount failed&quot;);</span>
-<span class="nc" id="L244">			return false;</span>
+<span class="nc" id="L545">		System.out.println(&quot;Deleting account &quot; + accountId);</span>
+<span class="nc" id="L546">		Log.info(&quot;userDeleteAccount calling deleteAccount and passing account ID and user ID&quot;);</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">		if(accountService.deleteAccount(accountId, currentUser.getUserId()) == false) {</span>
+<span class="nc" id="L548">			Log.info(&quot;userDeleteAccount returning false - deleteAccount failed&quot;);</span>
+<span class="nc" id="L549">			return false;</span>
 		}
-<span class="nc" id="L246">		Log.info(&quot;userDeleteAccount returning true - successfully deleted account&quot;);</span>
-<span class="nc" id="L247">		return true;</span>
+<span class="nc" id="L551">		Log.info(&quot;userDeleteAccount returning true - successfully deleted account&quot;);</span>
+<span class="nc" id="L552">		return true;</span>
 	}
 	
 	private static Boolean userDepositToAccount(Integer accountId, Double amount) {
-<span class="nc" id="L251">		Log.info(&quot;userDepositToAccount called and passed account ID &quot; + accountId + &quot; and amount&quot; + amount);</span>
-<span class="nc" id="L252">		Log.info(&quot;userDepositToAccount checking if user is logged in&quot;);</span>
-<span class="nc bnc" id="L253" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
-<span class="nc" id="L254">			Log.info(&quot;userDepositToAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L255">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
-<span class="nc" id="L256">			return false;</span>
+<span class="nc" id="L556">		Log.info(&quot;userDepositToAccount called and passed account ID &quot; + accountId + &quot; and amount&quot; + amount);</span>
+<span class="nc" id="L557">		Log.info(&quot;userDepositToAccount checking if user is logged in&quot;);</span>
+<span class="nc bnc" id="L558" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
+<span class="nc" id="L559">			Log.info(&quot;userDepositToAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L560">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
+<span class="nc" id="L561">			return false;</span>
 		}
-<span class="nc" id="L258">		Log.info(&quot;userDepositToAccount calling makeDeposit and passing account ID, amount, and user ID to retrieve transaction object&quot;);</span>
-<span class="nc" id="L259">		Transaction transaction = accountService.makeDeposit(accountId, amount, currentUser.getUserId());</span>
-<span class="nc bnc" id="L260" title="All 2 branches missed.">		if(transaction == null) {</span>
-<span class="nc" id="L261">			Log.info(&quot;userDepositToAccount returning false - makeDeposit failed&quot; + System.lineSeparator());</span>
-<span class="nc" id="L262">			return false;</span>
+<span class="nc" id="L563">		Log.info(&quot;userDepositToAccount calling makeDeposit and passing account ID, amount, and user ID to retrieve transaction object&quot;);</span>
+<span class="nc" id="L564">		Transaction transaction = accountService.makeDeposit(accountId, amount, currentUser.getUserId());</span>
+<span class="nc bnc" id="L565" title="All 2 branches missed.">		if(transaction == null) {</span>
+<span class="nc" id="L566">			Log.info(&quot;userDepositToAccount returning false - makeDeposit failed&quot; + System.lineSeparator());</span>
+<span class="nc" id="L567">			System.out.println(&quot;Failed to make deposit. Please try again&quot;);</span>
+<span class="nc" id="L568">			return false;</span>
 		}
-<span class="nc" id="L264">		Log.info(&quot;userDepositToAccount returning true - deposit successful&quot; + System.lineSeparator());</span>
-<span class="nc" id="L265">		return true;</span>
+<span class="nc" id="L570">		Log.info(&quot;userDepositToAccount returning true - deposit successful&quot; + System.lineSeparator());</span>
+<span class="nc" id="L571">		return true;</span>
 	}
 	
 	private static Boolean userWithdrawFromAccount(Integer accountId, Double amount) {
-<span class="nc" id="L269">		Log.info(&quot;userWithDrawFromAccount called and passed account ID &quot; + accountId + &quot; and amount&quot; + amount);</span>
-<span class="nc" id="L270">		Log.info(&quot;userWithDrawFromAccount checking if user is logged in&quot;);</span>
-<span class="nc bnc" id="L271" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
-<span class="nc" id="L272">			Log.info(&quot;userWithDrawFromAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L273">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
-<span class="nc" id="L274">			return false;</span>
+<span class="nc" id="L575">		Log.info(&quot;userWithDrawFromAccount called and passed account ID &quot; + accountId + &quot; and amount&quot; + amount);</span>
+<span class="nc" id="L576">		Log.info(&quot;userWithDrawFromAccount checking if user is logged in&quot;);</span>
+<span class="nc bnc" id="L577" title="All 4 branches missed.">		if(loggedIn == false || currentUser == null) {</span>
+<span class="nc" id="L578">			Log.info(&quot;userWithDrawFromAccount returned false - not currently logged in as user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L579">			System.out.println(&quot;Must be signed in to a user in order to perform this action&quot;);</span>
+<span class="nc" id="L580">			return false;</span>
 		}
-<span class="nc" id="L276">		Log.info(&quot;userWithDrawFromAccount calling makeWithdrawal and passing account ID, amount, and user ID to retrieve transaction object&quot;);</span>
-<span class="nc" id="L277">		Transaction transaction = accountService.makeWithdrawal(accountId, amount, currentUser.getUserId());</span>
-<span class="nc bnc" id="L278" title="All 2 branches missed.">		if(transaction == null) {</span>
-<span class="nc" id="L279">			Log.info(&quot;userWithDrawFromAccount returning false - makeWithdrawal failed&quot; + System.lineSeparator());</span>
-<span class="nc" id="L280">			return false;</span>
+<span class="nc" id="L582">		Log.info(&quot;userWithDrawFromAccount calling makeWithdrawal and passing account ID, amount, and user ID to retrieve transaction object&quot;);</span>
+<span class="nc" id="L583">		Transaction transaction = accountService.makeWithdrawal(accountId, amount, currentUser.getUserId());</span>
+<span class="nc bnc" id="L584" title="All 2 branches missed.">		if(transaction == null) {</span>
+<span class="nc" id="L585">			Log.info(&quot;userWithDrawFromAccount returning false - makeWithdrawal failed&quot; + System.lineSeparator());</span>
+<span class="nc" id="L586">			return false;</span>
 		}
-<span class="nc" id="L282">		Log.info(&quot;userWithDrawFromAccount returning true - withdrawal successful&quot; + System.lineSeparator());</span>
-<span class="nc" id="L283">		return true;</span>
+<span class="nc" id="L588">		Log.info(&quot;userWithDrawFromAccount returning true - withdrawal successful&quot; + System.lineSeparator());</span>
+<span class="nc" id="L589">		return true;</span>
 	}
 	
 	private static Boolean adminViewUser(String username) {
-<span class="nc" id="L287">		Log.info(&quot;adminViewUser called and passed username &quot;);</span>
-<span class="nc" id="L288">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
-<span class="nc bnc" id="L289" title="All 2 branches missed.">		if(isAdmin == false) {</span>
-<span class="nc" id="L290">			Log.info(&quot;adminViewUser returned false - not logged in as admin&quot; + System.lineSeparator());</span>
-<span class="nc" id="L291">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
-<span class="nc" id="L292">			return false;</span>
+<span class="nc" id="L593">		Log.info(&quot;adminViewUser called and passed username &quot;);</span>
+<span class="nc" id="L594">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
+<span class="nc bnc" id="L595" title="All 2 branches missed.">		if(isAdmin == false) {</span>
+<span class="nc" id="L596">			Log.info(&quot;adminViewUser returned false - not logged in as admin&quot; + System.lineSeparator());</span>
+<span class="nc" id="L597">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
+<span class="nc" id="L598">			return false;</span>
 		}
-<span class="nc" id="L294">		System.out.println(&quot;Viewing user&quot;);</span>
-<span class="nc" id="L295">		Log.info(&quot;adminViewUser calling viewUser and passing username&quot;);</span>
-<span class="nc" id="L296">		Boolean result = adminService.viewUser(username);</span>
-<span class="nc" id="L297">		Log.info(&quot;adminViewUser returning result of viewUser&quot; + System.lineSeparator());</span>
-<span class="nc" id="L298">		return result;</span>
+<span class="nc" id="L600">		System.out.println(&quot;Viewing user&quot;);</span>
+<span class="nc" id="L601">		Log.info(&quot;adminViewUser calling viewUser and passing username&quot;);</span>
+<span class="nc" id="L602">		Boolean result = adminService.viewUser(username);</span>
+<span class="nc" id="L603">		Log.info(&quot;adminViewUser returning result of viewUser&quot; + System.lineSeparator());</span>
+<span class="nc" id="L604">		return result;</span>
 	}
 	
 	private static Boolean adminViewAllUsers() {
-<span class="nc" id="L302">		Log.info(&quot;adminViewUsers called&quot;);</span>
-<span class="nc" id="L303">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
-<span class="nc bnc" id="L304" title="All 2 branches missed.">		if(isAdmin == false) {</span>
-<span class="nc" id="L305">			Log.info(&quot;adminViewUsers returned false - not logged in as admin&quot; + System.lineSeparator());</span>
-<span class="nc" id="L306">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
-<span class="nc" id="L307">			return false;</span>
+<span class="nc" id="L608">		Log.info(&quot;adminViewUsers called&quot;);</span>
+<span class="nc" id="L609">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
+<span class="nc bnc" id="L610" title="All 2 branches missed.">		if(isAdmin == false) {</span>
+<span class="nc" id="L611">			Log.info(&quot;adminViewUsers returned false - not logged in as admin&quot; + System.lineSeparator());</span>
+<span class="nc" id="L612">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
+<span class="nc" id="L613">			return false;</span>
 		}
-<span class="nc" id="L309">		System.out.println(&quot;Viewing all users&quot;);</span>
-<span class="nc" id="L310">		Log.info(&quot;adminViewAllUsers calling retrieveAllUsers to try and get list of user objects&quot;);</span>
-<span class="nc" id="L311">		List&lt;User&gt; userList = adminService.retrieveAllUsers();</span>
-<span class="nc bnc" id="L312" title="All 4 branches missed.">		if( userList == null || userList.isEmpty()) {</span>
-<span class="nc" id="L313">			Log.info(&quot;adminViewAllUsers completed search for users - no users exist&quot; + System.lineSeparator());</span>
-<span class="nc" id="L314">			System.out.println(&quot;Completed search - no users exist&quot;);</span>
-<span class="nc" id="L315">			return true;</span>
+<span class="nc" id="L615">		System.out.println(&quot;Viewing all users&quot;);</span>
+<span class="nc" id="L616">		Log.info(&quot;adminViewAllUsers calling retrieveAllUsers to try and get list of user objects&quot;);</span>
+<span class="nc" id="L617">		List&lt;User&gt; userList = adminService.retrieveAllUsers();</span>
+<span class="nc bnc" id="L618" title="All 4 branches missed.">		if( userList == null || userList.isEmpty()) {</span>
+<span class="nc" id="L619">			Log.info(&quot;adminViewAllUsers completed search for users - no users exist&quot; + System.lineSeparator());</span>
+<span class="nc" id="L620">			System.out.println(&quot;Completed search - no users exist&quot;);</span>
+<span class="nc" id="L621">			return true;</span>
 		}
-<span class="nc" id="L317">		Log.info(&quot;adminViewAllUsers displaying all users&quot;);</span>
-<span class="nc bnc" id="L318" title="All 2 branches missed.">		for(int i = 0; i &lt; userList.size(); i++) {</span>
-<span class="nc" id="L319">			User user = userList.get(i);</span>
-<span class="nc" id="L320">			System.out.println(user.toString());</span>
+<span class="nc" id="L623">		Log.info(&quot;adminViewAllUsers displaying all users&quot;);</span>
+<span class="nc bnc" id="L624" title="All 2 branches missed.">		for(int i = 0; i &lt; userList.size(); i++) {</span>
+<span class="nc" id="L625">			User user = userList.get(i);</span>
+<span class="nc" id="L626">			System.out.println(user.toString());</span>
 		}
-<span class="nc" id="L322">		Log.info(&quot;adminViewAllUsers completed showing all users&quot; + System.lineSeparator());</span>
-<span class="nc" id="L323">		System.out.println(&quot;Completed searching for users&quot;);</span>
-<span class="nc" id="L324">		return true;</span>
+<span class="nc" id="L628">		Log.info(&quot;adminViewAllUsers completed showing all users&quot; + System.lineSeparator());</span>
+<span class="nc" id="L629">		System.out.println(&quot;Completed search for users&quot;);</span>
+<span class="nc" id="L630">		promptInput();</span>
+<span class="nc" id="L631">		return true;</span>
 	}
 	
 	private static Boolean adminUpdateUsername(String username, String newName) {
-<span class="nc" id="L328">		Log.info(&quot;adminUpdateUsername called and passed &quot; + username + &quot; and &quot; + newName);</span>
-<span class="nc" id="L329">		Log.info(&quot;adminUpdateUsername checking if logged in as admin&quot;);</span>
-<span class="nc bnc" id="L330" title="All 2 branches missed.">		if(isAdmin == false) {</span>
-<span class="nc" id="L331">			Log.info(&quot;adminUpdateUsername returned false - not logged in as admin&quot; + System.lineSeparator());</span>
-<span class="nc" id="L332">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
-<span class="nc" id="L333">			return false;</span>
+<span class="nc" id="L635">		Log.info(&quot;adminUpdateUsername called and passed &quot; + username + &quot; and &quot; + newName);</span>
+<span class="nc" id="L636">		Log.info(&quot;adminUpdateUsername checking if logged in as admin&quot;);</span>
+<span class="nc bnc" id="L637" title="All 2 branches missed.">		if(isAdmin == false) {</span>
+<span class="nc" id="L638">			Log.info(&quot;adminUpdateUsername returned false - not logged in as admin&quot; + System.lineSeparator());</span>
+<span class="nc" id="L639">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
+<span class="nc" id="L640">			return false;</span>
 		}
-<span class="nc" id="L335">		System.out.println(&quot;Updating username from &quot; + username + &quot; to &quot; + newName);</span>
-<span class="nc" id="L336">		Log.info(&quot;adminUpdateUsername calling updateUsername and passing username and new name&quot;);</span>
-<span class="nc bnc" id="L337" title="All 2 branches missed.">		if(adminService.updateUsername(username, newName) == false) {</span>
-<span class="nc" id="L338">			Log.info(&quot;adminUpdateUsername returned false - updateUsername failed&quot; + System.lineSeparator());</span>
-<span class="nc" id="L339">			return false;</span>
+<span class="nc" id="L642">		System.out.println(&quot;Updating username from &quot; + username + &quot; to &quot; + newName);</span>
+<span class="nc" id="L643">		Log.info(&quot;adminUpdateUsername calling updateUsername and passing username and new name&quot;);</span>
+<span class="nc bnc" id="L644" title="All 2 branches missed.">		if(adminService.updateUsername(username, newName) == false) {</span>
+<span class="nc" id="L645">			Log.info(&quot;adminUpdateUsername returned false - updateUsername failed&quot; + System.lineSeparator());</span>
+<span class="nc" id="L646">			return false;</span>
 		}
-<span class="nc" id="L341">		Log.info(&quot;adminUpdateUsername returned true - successfully changed username&quot; + System.lineSeparator());</span>
-<span class="nc" id="L342">		return true;</span>
+<span class="nc" id="L648">		Log.info(&quot;adminUpdateUsername returned true - successfully changed username&quot; + System.lineSeparator());</span>
+<span class="nc" id="L649">		return true;</span>
 	}
 	
 	private static Boolean adminDeleteUser(String username) {
-<span class="nc" id="L346">		Log.info(&quot;adminDeleteUser called and passed username &quot; + username);</span>
-<span class="nc" id="L347">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
-<span class="nc bnc" id="L348" title="All 2 branches missed.">		if(isAdmin == false) {</span>
-<span class="nc" id="L349">			Log.info(&quot;adminDeleteuser returned false - not logged in as admin&quot; + System.lineSeparator());</span>
-<span class="nc" id="L350">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
-<span class="nc" id="L351">			return false;</span>
+<span class="nc" id="L653">		Log.info(&quot;adminDeleteUser called and passed username &quot; + username);</span>
+<span class="nc" id="L654">		Log.info(&quot;adminViewUsers checking if logged in as admin&quot;);</span>
+<span class="nc bnc" id="L655" title="All 2 branches missed.">		if(isAdmin == false) {</span>
+<span class="nc" id="L656">			Log.info(&quot;adminDeleteuser returned false - not logged in as admin&quot; + System.lineSeparator());</span>
+<span class="nc" id="L657">			System.out.println(&quot;Only admin users can perform this action&quot;);</span>
+<span class="nc" id="L658">			return false;</span>
 		}
-<span class="nc" id="L353">		System.out.println(&quot;Deleting user&quot;);</span>
-<span class="nc" id="L354">		Log.info(&quot;adminDeleteUser calling deleteUser and passing username&quot;);</span>
-<span class="nc bnc" id="L355" title="All 2 branches missed.">		if(adminService.deleteUser(username) == false) {</span>
-<span class="nc" id="L356">			Log.info(&quot;adminDeleteUser returning false - deleteUser failed&quot; + System.lineSeparator());</span>
-<span class="nc" id="L357">			return false;</span>
+<span class="nc" id="L660">		System.out.println(&quot;Deleting user&quot;);</span>
+<span class="nc" id="L661">		Log.info(&quot;adminDeleteUser calling deleteUser and passing username&quot;);</span>
+<span class="nc bnc" id="L662" title="All 2 branches missed.">		if(adminService.deleteUser(username) == false) {</span>
+<span class="nc" id="L663">			Log.info(&quot;adminDeleteUser returning false - deleteUser failed&quot; + System.lineSeparator());</span>
+<span class="nc" id="L664">			return false;</span>
 		}
-<span class="nc" id="L359">		Log.info(&quot;adminDeleteUser returning true - successfully deleted user&quot; + System.lineSeparator());</span>
-<span class="nc" id="L360">		System.out.println(&quot;Successfully deleted user&quot;);</span>
-<span class="nc" id="L361">		return true;</span>
+<span class="nc" id="L666">		Log.info(&quot;adminDeleteUser returning true - successfully deleted user&quot; + System.lineSeparator());</span>
+<span class="nc" id="L667">		System.out.println(&quot;Successfully deleted user&quot;);</span>
+<span class="nc" id="L668">		return true;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

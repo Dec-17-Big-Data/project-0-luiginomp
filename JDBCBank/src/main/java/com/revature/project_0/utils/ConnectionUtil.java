@@ -28,13 +28,12 @@ public class ConnectionUtil {
             in = new FileInputStream("src\\main\\resources\\connection.properties");
             props.load(in);
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con = null;
             String endpoint = props.getProperty("jdbc.url");
             String username = props.getProperty("jdbc.username");
             String password = props.getProperty("jdbc.password");
-            con = DriverManager.getConnection(endpoint, username, password);
-            Log.info("Connection established to " + con.getSchema() + " schema");
-            return con;
+            connectionInstance = DriverManager.getConnection(endpoint, username, password);
+            Log.info("Connection established to " + connectionInstance.getSchema() + " schema");
+            return connectionInstance;
 			
 		}catch (Exception e) {
 			Log.error("Unable to connect to database");
